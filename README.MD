@@ -30,9 +30,9 @@
 
 ## Format
 - Can multiply --> List
-    - Cards in hand/deck
+    - e.g. Cards in hand/deck
 - Unique --> Dictionary (Maybe class?)
-    - Card types
+    - e.g. Card types
 
 ## Functions
 - Turn system --> Negate boolean
