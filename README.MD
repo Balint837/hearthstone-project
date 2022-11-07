@@ -31,7 +31,7 @@
 ## Format
 - Can multiply --> List
     - Cards in hand/deck
-- Unique --> Dictionary
+- Unique --> Dictionary (Maybe class?)
     - Card types
 
 ## Functions
