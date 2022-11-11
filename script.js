@@ -18,12 +18,14 @@ class Card {
 
 
 class Hero{
-    constructor()
+    constructor(hero_power, hp)
+    /*hero_power is prob an instance for now, can't think of anything yet*/
 }
 
 let max_id = 0;
-let dict = {};
+let id_dict = {};
 let card_types = [new Card(mana_cost=max_mana+1)];
+let heroes = []
 let weapons = [0, 0]
 
 class PlacedCard{
@@ -40,4 +42,4 @@ class PlacedCard{
         return card_types[this.card];
     }
 }
-new PlacedCard(1)
+new PlacedCard(0)
