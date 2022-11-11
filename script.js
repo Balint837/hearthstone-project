@@ -1,5 +1,5 @@
 class Card {
-    constructor(atk, def, mana_cost, on_turnend=()=>{}, on_death=()=>{}, on_play=()=>{}, on_attack=()=>{}, on_spell=()=>{}, is_taunt=false, instant_atk=false, show_stats=true){
+    constructor(atk=0, def=0, mana_cost, on_turnend=()=>{}, on_death=()=>{}, on_play=()=>{}, on_attack=()=>{}, on_spell=()=>{}, is_taunt=false, instant_atk=false, show_stats=true){
         this.atk = atk // int
         this.def = def // int
         this.mana_cost = mana_cost // int

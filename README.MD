@@ -20,7 +20,7 @@
     - DMG
     - New card / semi-random Summon (some type)
     - Complex (e.g. damage-self + draw)
-- Card buffs / relations
+- Card buffs / relations (Can be permanent)
 - Minimal animation
 
 
@@ -65,6 +65,7 @@ increment(){
 - Placement --> List of card types + properties
 - Hero Power --> Store buffs + etc. in placed card properties
 - Card relations --> Possibly ID property?
+- Permanent effects --> Add to seperate list (on_play event)
 
 - Minimal animation --> Bruh
 
