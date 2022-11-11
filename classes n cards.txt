@@ -1,0 +1,80 @@
+{atk, def, mana_cost, on_play, on_turnend, on_death, 
+ on_attack, on_spell, is_taunt, instant_atk, show_stats}
+
+* = csak 1 db lehet a deckbe, minden másból 2 lehet
+divine shield = első sebződést elnyeli és lemegy róla
+fm = friendly minion
+hp = hero power
+
+Mage
+------------
+1. 0,0,1, ur hp deals +1 dmg, , , , , false, false, true
+2. 0,0,1, deal 2 dmg twice to a minion(pl ha divine shield van rajt akkor 2 dmg-t kap), , , , , false, false, true 
+3. 2,2,1, , , , , , false, false, false
+4. 0,0,2, deal 2 dmg and return this to your deck (if possible with +1 dmg), , , , , false, false, true
+5. 2,2,2, ur next spell does +2 dmg (if it deals if not nothing happens), , , , , false, false, true
+6. 2,3,2, draw a spell, , , , , false, false, false
+7. 0,0,2, until next turn you can only take 1 dmg at a time, , , , , false, false, true
+8. 0,0,7, deal 5 dmg to enemy minions, , , , , false, false, true
+9*. 8,8,8, if you dealt 10 dmg with hp deal 10 dmg to all enemys, , , , , false, false, false
+10*.  5,7,7, , , , , if you cast a spell add a '4 mana deal 6 dmg spell (11th card(de nem a deckből veszi ki))' to your hand, false, false, false
+11. 0,0,4, deal 6 dmg, , , , , false, false, true
+12. 0,0,10, deal 10 dmg, , , , , false, false, true
+13. 4,5,6, recast the last spell you've casted, , , , , false, false, false
+14. 0,0,4, transform a minion int a 1/1 sheep(does nothing) , , , , , false, false, true
+15. 3,6,4, , , , freeze the attacked target(cant attack in the opponets turn next turn), , false, false, false,
+16. 3,5,4, cast ur hp on all enemy minions, , , , , false, false, false
+
+total: 30
+
++*. (WEAPON) 0,3,6, , draw 3 cards until your hand is full (you dont overdraw from this but from turn start draw you will), , , , false, false, false
+
+Hunter
+------------
+1. 0,0,1, deal 2 dmg, , , , , false, false, true
+2. 0,0,1, set a minion's def to 1, , , , , false, false, true
+3. 1,1,1, summon a copy of this to the board, , , , , false, true, false
+4. 0,0,3, destroy a random enemy minion, , , , , false, false, true
+5*. 4,2,3, , deal 2 dmg to all other minions, , , , false, false, false
+
+
+
+
+Paladin
+------------
+1. 1,1,1, , , , , , true, false, false (DIVINE SHIELD) 
+2. 1,1,1, Draw 1, , , false, false, false
+3. 0,0,1, heal 2, put this back to your hand until turnend, , , , , false, false, true
+4. 3,2,2, give divine shield to minion, , , , , false, false, false
+5. 0,0,2, set all minions healt to 1, , , , , false, false, true
+6. 2,3,2, , , , , ha ezen spellt játszol még1szer lejátsza egy friendly minion-on, false, false, false
+7.* 3,3,3, , , give a fm +3(atk)/+3(def) and this on_death, , , false, false, false
+8. 0,0,4, give a minion +4/+4, , , , , false, false, true
+9. 0,0,4, summon 5 1/1 minions, , , , , false, false, true
+10. 5,5,5, summon another 5/5 if you dont have any other minions, , , , , true, false, false
+11. 8,8,8, , , , summon 5/5 taunt, , false, false, false
+12. 5,5,9, give u 1 mana for all spells you have cast this game, , , , , true, false, false
+13. 0,0,3, summon two 1/1 and then give fm +1/+1, , , , , false, false, true
+14. 3,3,3, , , , heal the dmg of this minion to your hero, , false, false, false
+15. 2,5,3, if u have a spell in ur hand gain taunt, , , , , false(true if fulfilled), false, false
+16*. 4,4,5, transform your minions into 3/3 and give your other minions on_death: summon a 1/1, , , , , false, false, false
+
+total:30
+
+Death Knight
+------------
+
+
+
+
+Warlock
+------------
+
+
+
+
+Priest
+------------
+
+
+
