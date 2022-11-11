@@ -35,9 +35,21 @@ Hunter
 2. 0,0,1, set a minion's def to 1, , , , , false, false, true
 3. 1,1,1, summon a copy of this to the board, , , , , false, true, false
 4. 0,0,3, destroy a random enemy minion, , , , , false, false, true
-5*. 4,2,3, , deal 2 dmg to all other minions, , , , false, false, false
-
-
+5*. 2,4,7, if ur hand does not have duplicates summon an 8/8(7th card(does not summon it from deck, summons a duplicate)) with can_attack, , , , , false, false, false
+6*. 3,4,3 , , , , , , false, false, false (spells are instakill)
+7*. 8,8,8, , , , , , false, true, false
+8*. 5,5,8, summon 3 minions from ur hand(takes them out from hand, on_play dosent activate), , , , , false, false, false
+9. 0,0,10, summon 4 3/5 minions that has can_attack, , , , , false, false, true
+10. 0,0,7, summon two minions from your deck that cost 5 or less, , , , , false,false, true
+11. 0,0,4, deal 6 dmg excess dmg hits enemy hero, , , , , false, false, true
+12. 3,3,4, , , summon two 1/1 minions, , , false, false, false
+13. 0,0,4, deal 3 dmg to two random enemy minions, , , , , false, false, true
+14. 0,0,3, deal 3 dmg your next hp has +2 dmg, , , , , false, false, true 
+15. 1,2,3, , , summon a 4/4, , , false, false, true
+16. 2,5,3, , , , , , false, false, false
+17. 2,1,2, give a copy to your hand until end of turn(it gives a copy also), , , , , false, true, false
+ 
+total:30
 
 
 Paladin
@@ -75,6 +87,18 @@ Warlock
 
 Priest
 ------------
+1. 0,0,0, heal 4 to all minions, , , , , false, false, true
+2. 0,0,1, set the attack of all enemy minins to 1 until your next turn, , , , , false, false, true
+3. 0,0,1, dmg 3 to a minion, , , , , false, false, true
+4. 0,0,1, COPY a card from opponent hand(add it to yours), , , , , false, false, true
+5. 0,0,2, copy 2 cards from your opponents deck add it to your hand, , , , , false, false, true
+6. 0,0,5, summon a copy of a friendly minion with 5/5 stats, , , , , false, false, true
+7. 0,0,5, give a minion +1/+2 then copy the minion, , , , , false, false, true
+7* 4,6,7, shuffle a copy of your opponents deck into your deck
+8* 0,0,9, summon a 1/1 copy of minions from your deck to the board until its full, , , , , false, false, true
 
 
 
+
+{atk, def, mana_cost, on_play, on_turnend, on_death, 
+ on_attack, on_spell, is_taunt, instant_atk, show_stats}
