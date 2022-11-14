@@ -1,5 +1,5 @@
 {atk, def, mana_cost, on_play, on_turnend, on_death, 
- on_attack, on_spell, is_taunt, instant_atk, show_stats}
+ on_attack, on_spell, is_taunt, instant_atk, is_spell}
 
 * = csak 1 db lehet a deckbe, minden másból 2 lehet
 divine shield = első sebződést elnyeli és lemegy róla
@@ -94,10 +94,6 @@ Death Knight
 17. 0,0,2, draw a card. spend two corpses to draw another, , , , , false, false, true
 
 total:30
-
-
-{atk, def, mana_cost, on_play, on_turnend, on_death, 
- on_attack, on_spell, is_taunt, instant_atk, show_stats}
 
 
 Warlock
