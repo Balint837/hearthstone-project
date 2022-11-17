@@ -1,5 +1,5 @@
 class Card {
-    constructor(atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false){
+    constructor({atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false}){
         this.atk = atk; // int
         this.def = def; // int
         this.mana_cost = mana_cost; // int
@@ -24,18 +24,39 @@ class Hero{
     /*hero_power is prob an instance for now, can't think of anything yet*/
 }
 
+function summonCardToHand(kwargs){
+    card_idx = kwargs["card_idx"]
+}
+function summonCardToDeck(card_idx){
+    card_idx = kwargs["card_idx"]
+}
+function ForceDrawCard(count){
+    count = kwargs["count"]
+}
+function ForceDrawType(cards, count){
+    cards = kwargs["cards"]
+    count = kwargs["count"]
+}
+function ForceDrawCondition(condition, count){
+    count = kwargs["count"]
+}
+function returnToDeck(){
+    targetID = kwargs["targetID"]
+}
+function returnToHand(){
+    targetID = kwargs["targetID"]
+}
+function DamageObjects(){
+    targets = kwargs["targets"]
+    initiator = kwargs["thisID"]
+}
 
-function damage1AnyMinion(targetId, atk){}
-function damage1AnyObj(targetId, atk){}
-function returnToDeck(targetId){}
-function summonCard(card_idx)
 
-new Card(
-    mana_cost=2,
-    on_play=[["target.id", "this.atk"], damage1AnyObj], [["self.id"], returnToDeck],
-    show_stats = true
-    )
+()=>{
+    DamageObjects({"thisID": card.id})
+}
 
+let max_mana = 10
 let max_id = 0;
 let id_dict = {};
 let card_types = [
@@ -44,6 +65,8 @@ let card_types = [
 ];
 let heroes = []
 let weapons = [0, 0]
+table = [[], []]
+hands = [[], []]
 
 class PlacedCard{
     constructor(card_idx) {
