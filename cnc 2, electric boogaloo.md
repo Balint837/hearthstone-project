@@ -28,6 +28,8 @@ If these cannot describe an ability then plain text is used to describe them. \
 (When entering them in JS just enter a string with a description, they'll be implemented later.) \
 (There may also be cases when I've got no idea wtf you wanted to say lol)
 
+()=>{}
+
 Mage
 ------------
 - 1:1. 0,0,1, spell ur hp deals +1 dmg
@@ -36,7 +38,7 @@ Mage
 - 4:4. 0,0,2, spell (d)=>{DamageObject(d), returnToDeck(d)} (deal 2dmg, return to deck)
 - 5:5. 2,2,2, on play ur next spell does +2 dmg
 - 6:6. 2,3,2, on play (d)=>{ForceDrawCondition(d)}  (draw a spell)
-- 7:7. 0,0,2, spell until next turn you can only take 1 dmg at a time
+- 7:7. 0,0,2, spell until your next turn you can only take 1 dmg at a time
 - 8:8. 0,0,7, spell, deal 5 dmg to enemy minions (all or one?????)
 - 9:9*. 8,8,8, if you dealt 10 dmg with hp deal 10 dmg to all enemys (wdym? does this refer to id 1:1?)
 - 10:10*.  5,7,7, summonCardToHand(11)

@@ -14,7 +14,7 @@ Mage
 4. 0,0,2, deal 2 dmg and return this to your deck (if possible with +1 dmg), , , , , false, false, true
 5. 2,2,2, ur next spell does +2 dmg (if it deals if not nothing happens), , , , , false, false, true
 6. 2,3,2, draw a spell, , , , , false, false, false
-7. 0,0,2, until next turn you can only take 1 dmg at a time, , , , , false, false, true
+7. 0,0,2, until your next turn you can only take 1 dmg at a time, , , , , false, false, true
 8. 0,0,7, deal 5 dmg to enemy minions, , , , , false, false, true
 9*. 8,8,8, if you dealt 10 dmg with hp deal 10 dmg to all enemys, , , , , false, false, false
 10*.  5,7,7, , , , , if you cast a spell add a '4 mana deal 6 dmg spell (11th card(de nem a deckből veszi ki))' to your hand, false, false, false
@@ -26,6 +26,8 @@ Mage
 16. 3,5,4, cast ur hero power on all enemy minions, , , , , false, false, false
 
 total: 30
+hp: deal 1 dmg to anything
+
 
 +*. (WEAPON) 0,3,6, , draw 3 cards until your hand is full (you dont overdraw from this but from turn start draw you will), , , , false, false, false
 
@@ -50,12 +52,12 @@ Hunter
 17. 2,1,2, give a copy to your hand until end of turn(it gives a copy also), , , , , false, true, false
  
 total:30
-
+hp: deal 2 dmg to enemy hero 
 
 Paladin
 ------------
-1. 1,1,1, , , , , , true, false, false (DIVINE SHIELD) 
-2. 1,1,1, Draw 1, , , false, false, false
+1. 1,1,1, , , , , , true, false, false, true
+2. 1,1,1, Draw 1, , , false, false, false, false
 3. 0,0,1, heal 2, put this back to your hand until turnend, , , , , false, false, true
 4. 3,2,2, give divine shield to minion, , , , , false, false, false
 5. 0,0,2, set all minions healt to 1, , , , , false, false, true
@@ -72,6 +74,7 @@ Paladin
 16*. 4,4,5, transform your minions into 3/3 and give your other minions on_death: summon a 1/1, , , , , false, false, false
 
 total:30
+hp: summon a 1/1 minion
 
 Death Knight
 ------------
@@ -94,7 +97,7 @@ Death Knight
 17. 0,0,2, draw a card. spend two corpses to draw another, , , , , false, false, true
 
 total:30
-
+hp: summon a 1/1 minion with instant_atk
 
 Warlock
 ------------
@@ -116,7 +119,7 @@ Warlock
 16*. 8,6,6, restore 5 mana if you have 9 cards left in your hand (you had a full hand while holding this), , , , , false, false, false
 
 total:30
-
+hp: deal 2 dmg to your hero and draws a card
 +*. (WEAPON) 0,3,5, , summon a minion from hand for free, , , , false, false, false
 
 
@@ -140,5 +143,5 @@ Priest
 16. 6,6,6, , , restore 8 healt to all friendly characters, , , true, false, false
 
 total:30
-
+hp: HEAL 2 to anything
 +*. (WEAPON) 0,3,3, , , , , if you cast 3 spells this turn summon a 5/5 minion, false, false, false
