@@ -26,7 +26,7 @@ If these cannot describe an ability then plain text is used to describe them. \
 (When entering them in JS just enter a string with a description, they'll be implemented later.) \
 (There may also be cases when I've got no idea wtf you wanted to say lol)
 
-()=>{}
+()=>{} 
 
 Mage
 ------------
