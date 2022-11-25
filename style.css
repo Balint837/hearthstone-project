@@ -33,3 +33,18 @@ body {
     right: 0;
     z-index: 10;
 }
+
+#rotation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    font-size: 4vw;
+}
+.center_row div{
+    border-color: black;
+    border-style: solid;
+    border-width: 0.5vw;
+    margin-bottom: 0.35vw;
+}
