@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,48 +8,52 @@
     <link rel="stylesheet" href="style.css">
     <title>Hearthstone Project</title>
 </head>
-<body style="display: none;">
-    <div id="board">
-        <div id="p2">
-            <div class="row">
-                <div id="p2Hand"> </div>
-                <div id="p2Mana"></div>
+
+<body>
+    <div id="game" style="display: none;">
+        <div id="board">
+            <div id="p2">
+                <div class="row">
+                    <div id="p2Hand"> </div>
+                    <div id="p2Mana"></div>
+                </div>
+                <div class="row">
+                    <div id="p2Weapon"></div>
+                    <div id="p2Hero"></div>
+                    <div id="p2HeroPower"></div>
+                </div>
+                <div class="row">
+                    <div id="p2Table"></div>
+                    <div id="p2Deck"></div>
+                </div>
             </div>
-            <div class="row">
-                <div id="p2Weapon"></div>
-                <div id="p2Hero"></div>
-                <div id="p2HeroPower"></div>
-            </div>
-            <div class="row">
-                <div id="p2Table"></div>
-                <div id="p2Deck"></div>
+
+            <div id="turn_button" onclick="end_turn()">End turn</div>
+
+            <div id="p1">
+                <div class="row">
+                    <div id="p1Table"></div>
+                    <div id="p1Deck"></div>
+                </div>
+                <div class="row">
+                    <div id="p1Weapon"></div>
+                    <div id="p1Hero"></div>
+                    <div id="p1HeroPower"></div>
+                </div>
+                <div class="row">
+                    <div id="p1Hand"></div>
+                    <div id="p1Mana"></div>
+                </div>
             </div>
         </div>
-
-        <div id="turn_button">turn_button</div>
-
-        <div id="p1">
-            <div class="row">
-                <div id="p1Table"></div>
-                <div id="p1Deck"></div>
-            </div>
-            <div class="row">
-                <div id="p1Weapon"></div>
-                <div id="p1Hero"></div>
-                <div id="p1HeroPower"></div>
-            </div>
-            <div class="row">
-                <div id="p1Hand"></div>
-                <div id="p1Mana"></div>
-            </div>
+    </div>
+    <div id="rotation" style="display: unset;">
+        <div class="center_row">
+            <div>Player 2's Turn!</div>
+            <div onclick="start_turn()">Show board</div>
         </div>
     </div>
 </body>
-<rotation style="display: unset;">
-    <div class="center_row">
-        <div>Player 2's Turn!</div>
-        <div>Show board</div>
-    </div>
-</rotation>
 <script src="script.js"></script>
+
 </html>

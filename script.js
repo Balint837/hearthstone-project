@@ -14,6 +14,11 @@ class Card {
         this.is_spell = is_spell; // bool
         this.is_protected = is_protected; // bool
         this.description = description; // string
+        //Battlecry = onplay
+        //Deathrattle = ondeath
+        //Taunt = istaunt
+        //Charge = instantattack
+        //Divine shield = isprotected
     }
 };
 
@@ -72,10 +77,73 @@ function GetCardBySelector(selector){
                     return table[+!player][+t[2]];
             }
         case "hero":
-            break;
+            return +t[1]
+        case "weapon":
+            if (t.length > 1) {
+                return weapons[+t[1]]
+            }
+            return weapons[+player]
+        case "ID":
+            return id_dict[+t[1]]
         default:
-            break;
+            return null;
     }
+}
+
+function GetIdFromIdSelector(selector){
+    return +selector.split(".")[1]
+}
+
+
+let IdSearchFunction = (array)=>{return Array.prototype.findIndex.call(array, (element)=>{element.id == ID})}
+function GetSelectorFromId(ID, prefer_index=true){
+    
+    t = IdSearchFunction(weapons)
+    if (t != -1) {
+        if (t == +player) {
+            if (prefer_index) {
+                return `weapon.${t}`
+            }
+            return "weapon"
+        }
+        else{
+            return `weapon.${t}`
+        }
+    }
+
+
+    for (let i = 0; i < 2; i++) {
+        t = IdSearchFunction(table[i])
+        if (t != -1) {
+            return `table.${i}.${t}`
+        }
+    }
+    
+
+    return null
+}
+
+
+function end_turn(){
+    gameObj = document.querySelector("body #game");
+    rotateObj = document.querySelector("body #rotation");
+    playerTurnObj = document.querySelector("body #rotation .center_row :first-child");
+    gameObj.style.display = "none";
+    rotateObj.style.display = "unset";
+    player = !player
+    playerTurnObj.innerText = `Player ${+player+1}'s turn!`
+    console.log(playerTurnObj)
+    rotating = true
+
+}
+
+function start_turn(){
+    gameObj = document.querySelector("body #game");
+    rotateObj = document.querySelector("body #rotation");
+    console.log("what")
+    gameObj.style.display = "unset";
+    rotateObj.style.display = "none";
+    rotating = false
 }
 
 
@@ -83,6 +151,7 @@ function GetCardBySelector(selector){
     DamageObjects({"thisID": card.id})
 }
 
+let rotating = false
 let max_mana = 10
 let current_mana = [0, 0]
 let player = false
@@ -186,7 +255,7 @@ let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
 let selected = ["heropower", "null"] // SelectedID, TargetID
-let selected_heroes = []
+let selected_heroes = [0, 0]
 
 
 class PlacedCard{
