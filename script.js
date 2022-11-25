@@ -146,6 +146,14 @@ function start_turn(){
     rotating = false
 }
 
+function doubleArray(arr){
+    
+}
+
+function generateDeck(nArr, legendArr){
+    return arr.concat(arr).concat(legendArr)
+}
+
 
 ()=>{
     DamageObjects({"thisID": card.id})
@@ -228,6 +236,14 @@ let weapons = [0, 0]
 let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
+let starter_decks = [
+    generateDeck([1,2,3,4,5,6,7,8,11,12,13,14,15,16], [9,10]),
+    generateDeck([17,18,19,20,25,26,27,28,29,30,31,32,33], [21,22,23,24]),
+    generateDeck([34,35,36,37,38,39,41,42,43,44,45,46,47,48], [40,49]),
+    generateDeck([52,53,54,55,56,57,58,59,61,63,64,65,66], [50,51,60,62]),
+    generateDeck([67,68,69,70,71,72,73,74,76,77,78,80,81], [75,79,82]),
+    generateDeck([83,84,85,86,87,88,89,92,93,94,95,96,97], [90,91]),
+]
 let selected = ["heropower", "null"] // SelectedID, TargetID
 let selected_heroes = [0, 0]
 
