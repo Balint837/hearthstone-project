@@ -52,6 +52,33 @@ function DamageObjects(kwargs){
     initiator = kwargs["thisID"]
 }
 
+
+function GetCardBySelector(selector){
+    t = selector.split(".")
+    switch (t[0]) {
+        case "hand":
+            switch (t[1]){
+                case "0":
+                    return hands[+player][+t[2]];
+                case "1":
+                    return hands[+!player][+t[2]];
+            }
+            break;
+        case "table":
+            switch (t[1]){
+                case "0":
+                    return table[+player][+t[2]];
+                case "1":
+                    return table[+!player][+t[2]];
+            }
+        case "hero":
+            break;
+        default:
+            break;
+    }
+}
+
+
 ()=>{
     DamageObjects({"thisID": card.id})
 }
@@ -118,12 +145,11 @@ let card_types = [
 ];
 let heroes = []
 let weapons = [0, 0]
-table = [[], []]
-hands = [[], []]
-decks = [[], []]
-weapons = [0, 0]
-selected = ["heropower", "null"] // SelectedID, TargetID
-
+let table = [[], []]
+let hands = [[], []]
+let decks = [[], []]
+let selected = ["heropower", "null"] // SelectedID, TargetID
+let selected_heroes = []
 
 
 class PlacedCard{
