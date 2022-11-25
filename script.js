@@ -58,6 +58,8 @@ function DamageObjects(kwargs){
 }
 
 let max_mana = 10
+let current_mana = [0, 0]
+let player = false
 let max_id = 0;
 let id_dict = {};
 let card_types = [
