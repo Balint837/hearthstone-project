@@ -33,3 +33,16 @@ body {
     right: 0;
     z-index: 10;
 }
+
+#p1Mana, #p2Mana {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 20vh;
+    float: right;
+}
+.mana {
+    width: 2vh;
+    height: 2vh;
+    background-color: blue;
+}
