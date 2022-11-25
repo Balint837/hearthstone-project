@@ -1,5 +1,5 @@
 class Card {
-    constructor({atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description}){
+    constructor(atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description){
         this.atk = atk; // int
         this.def = def; // int
         this.mana_cost = mana_cost; // int
@@ -52,7 +52,6 @@ function DamageObjects(kwargs){
     initiator = kwargs["thisID"]
 }
 
-
 ()=>{
     DamageObjects({"thisID": card.id})
 }
@@ -63,12 +62,15 @@ let player = false
 let max_id = 0;
 let id_dict = {};
 let card_types = [
-    new Card({mana_cost:max_mana+1}),
+    new Card(atk=0,def=0,mana_cost=max_mana+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description),
+    new Card(atk=0,def=0,mana_cost=max_mana+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description),
+
 ];
 let heroes = []
 let weapons = [0, 0]
 table = [[], []]
 hands = [[], []]
+decks = [[], []]
 weapons = [0, 0]
 selected = ["heropower", "null"] // SelectedID, TargetID
 
