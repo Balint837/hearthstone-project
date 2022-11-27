@@ -158,6 +158,7 @@ total:30
 100: +*. (WEAPON) 0,3,5, , summon a minion from hand for free, , , , false, false, false
 
 
+
 Priest
 ------------
 - 83:1. 0,0,0, heal 4 to all minions, , , , , false, false, true
