@@ -144,6 +144,7 @@ function start_turn(){
     gameObj.style.display = "unset";
     rotateObj.style.display = "none";
     rotating = false
+    AddMana();
 }
 
 function doubleArray(arr){
@@ -159,9 +160,33 @@ function generateDeck(nArr, legendArr){
     DamageObjects({"thisID": card.id})
 }
 
-let rotating = false
-let max_mana = 10
+let mana_cap = 10
+let max_mana = [0, 0]
 let current_mana = [0, 0]
+
+function AddMana() {
+    if (player) {
+        if (max_mana[0] < mana_cap) {
+                max_mana[0]++
+        }
+        current_mana[0] = max_mana[0]
+    }
+    else {
+        if (max_mana[1] < mana_cap) {
+        max_mana[1]++
+        }
+        current_mana[1] = max_mana[1]
+    }
+    const mana = document.createElement('div')
+    mana.className = 'mana'
+    if (player) {
+        document.getElementById('p1Mana').appendChild(mana)
+    }
+    else {
+        document.getElementById('p2Mana').appendChild(mana)
+    }
+}
+
 let player = false
 let max_id = 0;
 let id_dict = {};
@@ -308,6 +333,7 @@ let starter_decks = [
 ]
 let selected = ["heropower", "null"] // SelectedID, TargetID
 let selected_heroes = [0, 0]
+
 
 
 class PlacedCard{
