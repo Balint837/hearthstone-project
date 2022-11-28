@@ -100,6 +100,7 @@ Paladin
 - 49:16*. 4,4,5, transform your minions into 3/3 (106:+1) and give them on_death: summon a 1/1 (102:+1), , , , , false, false, false
 
 - 106:+1. 3,3,3, , , summon a 1/1 (102:+1), , true, false, false
+- 111+2. 1,1,1, , , , , , false, true, false
 
 total:30
 

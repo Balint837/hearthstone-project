@@ -19,6 +19,7 @@ class Card {
         //Taunt = istaunt
         //Charge = instantattack
         //Divine shield = isprotected
+        //Poisonous = instakill when damaged
     }
 };
 
@@ -329,7 +330,7 @@ let card_types = [
     new Card(atk=0,def=0,mana_cost=0,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Heal 2 health to your hero"),
     new Card(atk=1,def=3,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=true, instant_atk=false, is_spell=false, is_protected=false, description="Taunt"),
     new Card(atk=5,def=5,mana_cost=5,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
-
+    new Card(atk=1,def=1,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=true, is_spell=false, is_protected=false, description="Charge")
 
 
 
@@ -356,7 +357,7 @@ let starter_decks = [
     generateDeck([34,35,36,37,38,39,41,42,43,44,45,46,47,48], [40,49]),
     generateDeck([52,53,54,55,56,57,58,59,61,63,64,65,66], [50,51,60,62]),
     generateDeck([67,68,69,70,71,72,73,74,76,77,78,80,81], [75,79,82]),
-    generateDeck([83,84,85,86,87,88,89,92,93,94,95,96,97], [90,91]),
+    generateDeck([83,84,85,86,87,88,89,92,93,94,95,96,97,98], [90,91]),
 ]
 let selected = [null, null] // SelectedID, TargetID
 let selected_heroes = [0, 0]
