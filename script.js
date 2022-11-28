@@ -123,6 +123,60 @@ function GetSelectorFromId(ID, prefer_index=true){
     return null
 }
 
+function selectCardbySelector(selector){
+    switch (selected[0]) {
+        case null:
+            selected[0] = selector;
+            return;
+
+        case selector:
+            selected = [null, null];
+            return;
+
+        default:
+            splitSelector = selector.split(".");
+            splitSelected = selected[0].split(".");
+            switch (splitSelected[0]) {
+                case "hand":
+                    switch (splitSelector[0]) {
+                        case "hand":
+                            selected[0] = selector;
+                            return;
+                        
+                        case "table":
+                            return PlaceCard(selector); //selected = [null, null]
+                        default:
+                            return;
+                    }
+                case "table":
+                    if (+splitSelected[1] != NaN) {
+                        switch (splitSelector[0]) {
+                            case "table":
+                                return AttackWithCard(selected[0], selector) //selected = [null, null]
+                            default:
+                                return;
+                        }
+                    }
+                    else {
+                        selected[0] = selector;
+                    }
+                    break;
+                default:
+                    return;
+            }
+    }
+}
+
+function PlaceCard(selector)
+
+function selectCardbyId(){
+
+}
+
+
+function updateCards(){
+
+}
 
 function end_turn(){
     gameObj = document.querySelector("body #game");
@@ -134,7 +188,7 @@ function end_turn(){
     playerTurnObj.innerText = `Player ${+player+1}'s turn!`
     console.log(playerTurnObj)
     current_scene = 2
-
+    selected = [null, null]
 }
 
 function start_turn(){
@@ -304,7 +358,7 @@ let starter_decks = [
     generateDeck([67,68,69,70,71,72,73,74,76,77,78,80,81], [75,79,82]),
     generateDeck([83,84,85,86,87,88,89,92,93,94,95,96,97], [90,91]),
 ]
-let selected = ["heropower", "null"] // SelectedID, TargetID
+let selected = [null, null] // SelectedID, TargetID
 let selected_heroes = [0, 0]
 
 function AddMana() {
