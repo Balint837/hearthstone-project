@@ -148,7 +148,7 @@ function start_turn(){
 }
 
 function generateDeck(nArr, legendArr){
-    return arr.concat(arr).concat(legendArr)
+    return nArr.concat(nArr).concat(legendArr)
 }
 
 
@@ -308,25 +308,15 @@ let selected = ["heropower", "null"] // SelectedID, TargetID
 let selected_heroes = [0, 0]
 
 function AddMana() {
-    if (player) {
-        if (max_mana[1] < mana_cap) {
-                max_mana[1]++
+
+    if (max_mana[+player] < mana_cap){
+        if (max_mana[+player] < mana_cap) {
+                max_mana[+player]++
         }
-        current_mana[1] = max_mana[1]
-    }
-    else {
-        if (max_mana[0] < mana_cap) {
-        max_mana[0]++
-        }
-        current_mana[0] = max_mana[0]
-    }
-    const mana = document.createElement('div')
-    mana.className = 'mana'
-    if (player) {
-        document.getElementById('p2Mana').appendChild(mana)
-    }
-    else {
-        document.getElementById('p1Mana').appendChild(mana)
+        current_mana[+player] = max_mana[+player]
+        const mana = document.createElement('div')
+        mana.className = 'mana'
+        document.getElementById(`p${player+1}Mana`).appendChild(mana)
     }
 }
 AddMana() // Player1 starts with 1 mana at game start
