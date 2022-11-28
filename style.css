@@ -37,19 +37,21 @@ body {
     top: 48vh;
     right: 0;
     z-index: 10;
+    background-color: white;
 }
 
 #p1Mana, #p2Mana {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    width: 20vh;
+    width: 20vw;
     float: right;
 }
 .mana {
     width: 1vh;
     height: 1vh;
     background-color: blue;
+    margin: 0;
 }
 
 #rotation {
@@ -69,7 +71,7 @@ body {
 
 
 .row2-large{
-    width: 95%;
+    width: 85%;
     display: flex;
     flex: 1;
 }
@@ -78,4 +80,12 @@ body {
 .row2-small{
     top: 50%;
     transform: translate(0, 45%);
+}
+
+#p1Deck, #p2Deck{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 5vw;
+    float: right;
 }
