@@ -133,7 +133,7 @@ function end_turn(){
     player = !player
     playerTurnObj.innerText = `Player ${+player+1}'s turn!`
     console.log(playerTurnObj)
-    rotating = true
+    current_scene = 2
 
 }
 
@@ -143,11 +143,7 @@ function start_turn(){
     console.log("what")
     gameObj.style.display = "unset";
     rotateObj.style.display = "none";
-    rotating = false
-}
-
-function doubleArray(arr){
-    
+    current_scene = 1
 }
 
 function generateDeck(nArr, legendArr){
@@ -159,7 +155,7 @@ function generateDeck(nArr, legendArr){
     DamageObjects({"thisID": card.id})
 }
 
-let rotating = false
+let current_scene = 1
 let max_mana = 10
 let current_mana = [0, 0]
 let player = false
