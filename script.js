@@ -346,6 +346,6 @@ class PlacedCard{
 }
 
 
-
+// player1 starts with 3 cards, player2 starts with 4
 
 new PlacedCard(0)
