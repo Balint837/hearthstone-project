@@ -1,6 +1,7 @@
 body {
     padding: 0;
     margin: 0;
+    font-size: 1.25vw;
 }
 
 #board {
@@ -40,7 +41,7 @@ body {
     background-color: white;
 }
 
-#turn_button:hover{
+div[onclick]:hover{
     cursor: pointer;
     color: blue;
     text-decoration: underline;
@@ -69,9 +70,7 @@ body {
     font-size: 4vw;
 }
 .center_row div{
-    border-color: black;
-    border-style: solid;
-    border-width: 0.5vw;
+    border: 0.5vw solid black;
     margin-bottom: 0.35vw;
 }
 
@@ -94,6 +93,9 @@ body {
     justify-content: space-evenly;
     width: 5vw;
     float: right;
+    border: 0.1vw solid black;
+    height: 2.5vw;
+    margin-top: 4.5vh;
 }
 
 #p1Hand, #p2Hand{
@@ -121,4 +123,33 @@ body {
 }
 .defdisplay{
     color: green;
+}
+
+.inner-row{
+    height: 21%;
+    width: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1;
+}
+
+.playCard .inner-row:first-child{
+    height: 80%;
+}
+
+
+.inner-row div{
+    margin: 0 auto;
+}
+
+#heroSelect div{
+    padding: 2vw;
+    width: 50%;
+    margin: 3vw auto 3vw auto;
+    font-size: 3vw;
+}
+
+#heroSelect div label:first-child{
+    margin: auto 3vw auto 3vw;
 }

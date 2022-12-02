@@ -169,7 +169,7 @@ function selectCardbySelector(selector){
 }
 
 function PlaceCard(selector){
-    
+
 }
 
 function selectCardbyId(){
@@ -181,17 +181,45 @@ function updateCards(){
 
 }
 
+function pullCard(){
+    hands[+player]
+}
+
+function HeroSelect(player, hero){
+    console.log(player, hero)
+}
+
+function shuffleArray(arr){
+    return [...arr].sort((a,b)=>0.5-Math.random())
+}
+
+function start_game(){
+    heroSelectObj = document.querySelector("body #heroSelect");
+    rotateObj = document.querySelector("body #rotation");
+    playerTurnObj = document.querySelector("body #rotation .center_row :first-child");
+    playerTurnObj.innerText = `Player ${+player+1}'s turn!`;
+    heroSelectObj.style.display = "none";
+    rotateObj.style.display = "unset";
+    current_scene = 2
+    for (let index = 0; index < selected_heroes.length; index++) {
+        console.log("---------------", index)
+        SelectedHero = +document.querySelector(`body #heroSelect .row:nth-child(${index+1}) select`).value;
+        selected_heroes[index] = SelectedHero;
+        decks[index] = shuffleArray(starter_decks[SelectedHero])
+    }
+}
+
 function end_turn(){
     gameObj = document.querySelector("body #game");
     rotateObj = document.querySelector("body #rotation");
     playerTurnObj = document.querySelector("body #rotation .center_row :first-child");
     gameObj.style.display = "none";
     rotateObj.style.display = "unset";
-    player = !player
-    playerTurnObj.innerText = `Player ${+player+1}'s turn!`
-    console.log(playerTurnObj)
-    current_scene = 2
-    selected = [null, null]
+    player = !player;
+    playerTurnObj.innerText = `Player ${+player+1}'s turn!`;
+    console.log(playerTurnObj);
+    current_scene = 2;
+    selected = [null, null];
 }
 
 function start_turn(){
@@ -213,7 +241,7 @@ function generateDeck(nArr, legendArr){
     DamageObjects({"thisID": card.id})
 }
 
-let current_scene = 1
+let current_scene = 3 // 1: currently playing, 2: currently rotating, 3: hero selection (default), 4: game over
 let mana_cap = 10
 let max_mana = [0, 0]
 let current_mana = [0, 0]
@@ -376,7 +404,7 @@ function AddMana() {
         document.getElementById(`p${player+1}Mana`).appendChild(mana)
     }
 }
-AddMana() // Player1 starts with 1 mana at game start
+
 class PlacedCard{
     constructor(card_idx) {
         this.id = max_id++;

@@ -184,3 +184,12 @@ Priest
 total:30
 
 101: +*. (WEAPON) 0,3,3, , , , , if you cast 3 spells this turn summon a 5/5 minion (110:+1), false, false, false
+
+
+
+
+
+
+
+Norbi lap:
+111:+-. 0atk,1hp,0mana, taunt
