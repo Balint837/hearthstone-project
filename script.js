@@ -168,7 +168,9 @@ function selectCardbySelector(selector){
     }
 }
 
-function PlaceCard(selector)
+function PlaceCard(selector){
+    
+}
 
 function selectCardbyId(){
 

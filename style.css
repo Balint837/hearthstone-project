@@ -95,3 +95,30 @@ body {
     width: 5vw;
     float: right;
 }
+
+#p1Hand, #p2Hand{
+    
+}
+
+.playCard{
+    width: 12.5vw;
+    font-size: 1.5vw;
+    margin: 0;
+}
+.playCard div.row{
+    background-color: white;
+}
+.description{
+    font-size: 1.1vw;
+    height: 100%;
+}
+
+.manadisplay{
+    color: blue;
+}
+.atkdisplay{
+    color: red;
+}
+.defdisplay{
+    color: green;
+}
