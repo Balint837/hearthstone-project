@@ -77,12 +77,14 @@ function GetCardBySelector(selector){
                 case "1":
                     return table[+!player][+t[2]];
             }
+        case "heropower":
+            return selector
         case "hero":
-            return +t[1]
+            return selector
         case "weapon":
-            if (t.length > 1) {
-                return weapons[+t[1]]
-            }
+            // if (t.length > 1) {
+            //     return weapons[+t[1]]
+            // }
             return weapons[+player]
         case "ID":
             return id_dict[+t[1]]
@@ -90,6 +92,13 @@ function GetCardBySelector(selector){
             return null;
     }
 }
+
+// ID.<id>
+// weapon
+// table.<player>.<idx>
+// hand.<player>.<idx>
+// hero.<player>
+// heropower.<player>
 
 function GetIdFromIdSelector(selector){
     return +selector.split(".")[1]
@@ -169,28 +178,153 @@ function selectCardbySelector(selector){
 }
 
 function PlaceCard(selector){
-
+    
 }
 
 function selectCardbyId(){
 
 }
 
+function updateAll(){
+    updateHands();
+    updateTable();
+    updateDecks();
+}
 
-function updateCards(){
+
+function updateDecks(){
+    for (let index = 0; index < 2; index++) {
+        deckElem = document.getElementById(`p${index+1}Deck`)
+        deckElem.innerText = "Cards: " + decks[index].length
+        
+    }
+}
+
+function updateHands(){
+    updateDecks()
+    for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
+        handElem = document.getElementById(`p${playerIdx+1}Hand`)
+        handElem.innerHTML = ""
+        for (let cardIdx = 0; cardIdx < hands[playerIdx].length; cardIdx++) {
+            value = hands[playerIdx][cardIdx]
+            if (playerIdx == +player) {
+                handElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};" onclick="selectCardbySelector('hand.${playerIdx}.${cardIdx}')">
+                                        <div class="inner-row">
+                                            <div class="description">${card_types[value].description}</div>
+                                        </div>
+                                        <div class="inner-row">
+                                            <div class="atkdisplay">
+                                                ${card_types[value].atk}
+                                            </div>
+                                            <div class="manadisplay">
+                                                ${card_types[value].mana_cost}
+                                            </div>
+                                            <div class="defdisplay">
+                                                ${card_types[value].def}
+                                            </div>
+                                        </div>
+                                    </div>`
+            }
+            else{
+                handElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};" onclick="selectCardbySelector('hand.${playerIdx}.${cardIdx}')">
+                                        <div class="inner-row">
+                                            <div class="description"></div>
+                                        </div>
+                                        <div class="inner-row">
+                                            <div class="atkdisplay">
+                                            </div>
+                                            <div class="manadisplay">
+                                            </div>
+                                            <div class="defdisplay">
+                                            </div>
+                                        </div>
+                                    </div>`
+            }
+            
+            
+        }
+        
+    }
+}
+
+function updateTable(){
+    for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
+        TableElem = document.getElementById(`p${playerIdx+1}Table`)
+        TableElem.innerHTML = ""
+        for (let cardIdx = 0; cardIdx < table[playerIdx].length; cardIdx++) {
+            value = table[playerIdx][cardIdx]
+            TableElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};" onclick="selectCardbySelector('ID.${value.id}')">
+                                        <div class="inner-row">
+                                            <div class="description">${value.card.description}</div>
+                                        </div>
+                                        <div class="inner-row">
+                                            <div class="atkdisplay">
+                                                ${value.atk}
+                                            </div>
+                                            <div class="manadisplay">
+                                                ${value.card.mana_cost}
+                                            </div>
+                                            <div class="defdisplay">
+                                                ${value.def}
+                                            </div>
+                                        </div>
+                                    </div>`
+            
+        }
+        
+    }
+}
+
+function overdraw(){
+
+}
+
+function fatigue(){
 
 }
 
 function pullCard(){
-    hands[+player]
+    if (decks[+player].length == 0) {
+        return fatigue()
+    }
+    if (hands[+player].length >= max_hand) {
+        return overdraw()
+    }
+    index = exclusiveRandRange(0, decks[+player].length);
+    value = decks[+player][index];
+    decks[+player].splice(index, 1);
+    hands[+player].push(value);
+    updateHands();
+    updateDecks()
+    return;
+}
+
+function mustPullCard(targetPlayer){
+    if (decks[+targetPlayer].length == 0) {
+        return fatigue()
+    }
+    if (hands[+targetPlayer].length >= max_hand) {
+        return overdraw()
+    }
+    index = exclusiveRandRange(0, decks[+targetPlayer].length);
+    value = decks[+targetPlayer][index];
+    decks[+targetPlayer].splice(index, 1);
+    hands[+targetPlayer].push(value);
+    updateHands();
+    updateDecks()
+    return;
 }
 
 function HeroSelect(player, hero){
-    console.log(player, hero)
+    selected_heroes[player] = hero
 }
 
 function shuffleArray(arr){
     return [...arr].sort((a,b)=>0.5-Math.random())
+}
+
+function exclusiveRandRange(a, b){
+    return Math.floor(Math.random()*(b-a)+a)
 }
 
 function start_game(){
@@ -207,6 +341,11 @@ function start_game(){
         selected_heroes[index] = SelectedHero;
         decks[index] = shuffleArray(starter_decks[SelectedHero])
     }
+    for (let index = 0; index < 3; index++) {
+        mustPullCard(0)
+        mustPullCard(1)
+    }
+    mustPullCard(1)
 }
 
 function end_turn(){
@@ -217,7 +356,6 @@ function end_turn(){
     rotateObj.style.display = "unset";
     player = !player;
     playerTurnObj.innerText = `Player ${+player+1}'s turn!`;
-    console.log(playerTurnObj);
     current_scene = 2;
     selected = [null, null];
 }
@@ -225,10 +363,11 @@ function end_turn(){
 function start_turn(){
     gameObj = document.querySelector("body #game");
     rotateObj = document.querySelector("body #rotation");
-    console.log("what")
     gameObj.style.display = "unset";
     rotateObj.style.display = "none";
     current_scene = 1
+    may_pull = true;
+    pullCard();
     AddMana();
 }
 
@@ -241,6 +380,7 @@ function generateDeck(nArr, legendArr){
     DamageObjects({"thisID": card.id})
 }
 
+let may_pull = true;
 let current_scene = 3 // 1: currently playing, 2: currently rotating, 3: hero selection (default), 4: game over
 let mana_cap = 10
 let max_mana = [0, 0]
@@ -381,6 +521,8 @@ let weapons = [0, 0]
 let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
+max_hand = 10
+max_table = 7
 let starter_decks = [
     generateDeck([1,2,3,4,5,6,7,8,11,12,13,14,15,16], [9,10]),
     generateDeck([17,18,19,20,25,26,27,28,29,30,31,32,33], [21,22,23,24]),

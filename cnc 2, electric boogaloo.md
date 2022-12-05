@@ -192,4 +192,4 @@ total:30
 
 
 Norbi lap:
-111:+-. 0atk,1hp,0mana, taunt
+111:+-. 0atk,10hp,0mana, taunt
