@@ -27,6 +27,10 @@ class Card {
 class Hero{
     constructor(hero_power=(target)=>{}){
         this.hp = 30
+        this.max_hp = 30
+        this.weapon = card_types[0]
+        this.fatigue = 0
+        this.hero_power = hero_power
     }
     /*hero_power is prob an instance for now, can't think of anything yet*/
 }
@@ -276,7 +280,7 @@ function updateTable(){
 }
 
 function overdraw(){
-    if (hands[+player].length >= current_max_hand) {
+    if (hands[+player].length >= max_hand[+player]) {
         index = exclusiveRandRange(0, decks[+player].length);
         decks[+player].splice(index, 1);
         updateHands();
@@ -288,10 +292,7 @@ function overdraw(){
 p1fatigue = 0;
 p2fatigue = 0;
 function fatigue(){
-    if (decks[+player].length == 0) {
-        
-    }
-    //az if ide is kellhet még, ezt késöbb töröljük ha nem
+    
 }
 
 function pullCard(){
@@ -527,13 +528,20 @@ let card_types = [
 
 
 ];
-let heroes = []
+let heroes = [
+    Hero(), //Mage
+    Hero(), //Hunter
+    Hero(), //Paladin
+    Hero(), //Death Knight
+    Hero(), //Warlock
+    Hero(), //Priest
+    Hero()  //norbi Xd
+]
 let weapons = [0, 0]
 let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
-max_hand = 10
-current_max_hand = 10
+max_hand = [10, 10]
 max_table = 7
 let starter_decks = [
     generateDeck([1,2,3,4,5,6,7,8,11,12,13,14,15,16], [9,10]),
