@@ -276,11 +276,22 @@ function updateTable(){
 }
 
 function overdraw(){
-
+    if (hands[+player].length >= current_max_hand) {
+        index = exclusiveRandRange(0, decks[+player].length);
+        decks[+player].splice(index, 1);
+        updateHands();
+        updateDecks();
+        return;
+    }
+    //az if ide is kellhet még, ezt késöbb töröljük ha nem
 }
-
+p1fatigue = 0;
+p2fatigue = 0;
 function fatigue(){
-
+    if (decks[+player].length == 0) {
+        
+    }
+    //az if ide is kellhet még, ezt késöbb töröljük ha nem
 }
 
 function pullCard(){
@@ -522,6 +533,7 @@ let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
 max_hand = 10
+current_max_hand = 10
 max_table = 7
 let starter_decks = [
     generateDeck([1,2,3,4,5,6,7,8,11,12,13,14,15,16], [9,10]),
