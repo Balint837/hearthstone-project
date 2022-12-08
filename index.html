@@ -15,7 +15,7 @@
             <label for="HeroSelect1">Player 1 Hero</label>
             <select id="HeroSelect1" oninput="HeroSelect(0, +this.value)">
                 <option value="0">Mage</option>
-                <option value="1">Hunter</option>
+                <option value="1" selected>Hunter</option>
                 <option value="2">Paladin</option>
                 <option value="3">Death Knight</option>
                 <option value="4">Warlock</option>
@@ -27,7 +27,7 @@
             <label for="HeroSelect2">Player 2 Hero</label>
             <select id="HeroSelect2" oninput="HeroSelect(1, +this.value)">
                 <option value="0">Mage</option>
-                <option value="1">Hunter</option>
+                <option value="1" selected>Hunter</option>
                 <option value="2">Paladin</option>
                 <option value="3">Death Knight</option>
                 <option value="4">Warlock</option>
@@ -96,8 +96,8 @@
                     <div id="p2Mana" class="row2-small">p2Mana</div>
                 </div>
                 <div class="row">
-                    <div id="p2Weapon" class="row3-side">p2Weapon</div>
-                    <div id="p2Hero" class="row3-mid">p2Hero</div>
+                    <div id="p2Weapon" class="row3-side" onclick="selectCardbySelector('weapon.1')">p2Weapon</div>
+                    <div id="p2Hero" class="row3-mid" onclick="selectCardbySelector('hero.1')">p2Hero</div>
                     <div id="p2HeroPower" class="row3-side">p2HeroPower</div>
                 </div>
                 <div class="row">
@@ -122,9 +122,9 @@
                     <div id="p1Deck" class="row2-small">p1Deck</div>
                 </div>
                 <div class="row">
-                    <div id="p1Weapon">p1Weapon</div>
-                    <div id="p1Hero">p1Hero</div>
-                    <div id="p1HeroPower">p1HeroPower</div>
+                    <div id="p1Weapon" class="row3-side" onclick="selectCardbySelector('weapon.0')">p1Weapon</div>
+                    <div id="p1Hero" onclick="selectCardbySelector('hero.0')" class="row3-mid" >p1Hero</div>
+                    <div id="p1HeroPower" class="row3-side">p1HeroPower</div>
                 </div>
                 <div class="row">
                     <div id="p1Hand" class="row2-large">
@@ -142,6 +142,8 @@
             <div>Player 2's Turn!</div>
             <div onclick="start_turn()">Show board</div>
         </div>
+    </div>
+    <div id="gameOver" style="display: none;">
     </div>
 </body>
 <script src="script.js"></script>

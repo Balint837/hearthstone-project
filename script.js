@@ -1,5 +1,5 @@
 class Card {
-    constructor(atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description){
+    constructor(atk=0, def=0, mana_cost, on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="", is_weapon=false){
         this.atk = atk; // int
         this.def = def; // int
         this.mana_cost = mana_cost; // int
@@ -13,6 +13,7 @@ class Card {
         this.instant_atk = instant_atk; // bool
         this.is_spell = is_spell; // bool
         this.is_protected = is_protected; // bool
+        this.is_weapon = is_weapon; // bool
         this.description = description; // string
         //Battlecry = onplay
         //Deathrattle = ondeath
@@ -64,25 +65,29 @@ function DamageObjects(kwargs){
 
 
 function GetCardBySelector(selector){
-    t = selector.split(".")
-    switch (t[0]) {
-        case "hand":
-            return hands[+t[1]][+t[2]];
-        case "table":
-            return table[+t[1]][+t[2]];
-        case "heropower":
-            return selector
-        case "hero":
-            return selector
-        case "weapon":
-            // if (t.length > 1) {
-            //     return weapons[+t[1]]
-            // }
-            return weapons[+player]
-        case "ID":
-            return id_dict[+t[1]]
-        default:
-            return null;
+    try {
+        t = selector.split(".")
+        switch (t[0]) {
+            case "hand":
+                return hands[+t[1]][+t[2]];
+            case "table":
+                return table[+t[1]][+t[2]];
+            case "heropower":
+                return selector
+            case "hero":
+                return selector
+            case "weapon":
+                // if (t.length > 1) {
+                //     return weapons[+t[1]]
+                // }
+                return weapons[+player]
+            case "ID":
+                return id_dict[+t[1]]
+            default:
+                return null;
+        }
+    } catch (error) {
+        return null;
     }
 }
 
@@ -97,8 +102,42 @@ function GetIdFromIdSelector(selector){
     return +selector.split(".")[1]
 }
 
-function AttackWithCard(){
-    selected = [null, null]
+function AttackWithCard(attacker, target){
+    console.log(attacker, target)
+    splitAttacker = attacker.split(".")
+    splitTarget = target.split(".")
+    attackerCard = GetCardBySelector(attacker);
+    console.log(attackerCard.may_attack, splitAttacker[1], splitTarget[1])
+    if (!attackerCard.may_attack || splitAttacker[1] == splitTarget[1] || +splitAttacker[1] != +player) {
+        console.log("disallowed attack");
+        selected = [null, null];
+        updateAll();
+        allow_table = true;
+        return;
+    }
+    switch (splitTarget[0]) {
+        case "hero":
+            heroes[selected_heroes[+splitTarget[1]]].hp -= attackerCard.atk;
+            attackerCard.may_attack = false;
+            selected = [null, null];
+            return updateAll();
+        case "weapon":
+            heroes[selected_heroes[+splitTarget[1]]].weapon.hp -= attackerCard.atk;
+            attackerCard.may_attack = false;
+            selected = [null, null];
+            return updateAll();
+        default:
+            break;
+    }
+    targetCard = GetCardBySelector(target);
+    console.log(targetCard.hp, attackerCard.atk)
+    console.log(attackerCard, targetCard)
+    targetCard.hp -= attackerCard.atk;
+    attackerCard.may_attack = false;
+    console.log("attacked with card");
+    selected = [null, null];
+    updateAll();
+    allow_table = true;
 }
 
 
@@ -138,19 +177,28 @@ function selectCardbySelector(selector){
     splitSelector = selector.split(".");
     if (splitSelector[0] == "ID"){
         selector = GetSelectorFromId(+splitSelector[1], true, selector)
+        splitSelector = selector.split(".");
     }
+    console.log(selected, selector, splitSelector)
     if (selector == "table" && !allow_table){
-        selected = [null, null]
+        console.log("disallowed table")
         allow_table = true
         return updateAll();
     }
     switch (selected[0]) {
         case null:
             selected[0] = selector;
+            if (splitSelector[0] == "table") {
+                allow_table = false;
+            }
             return updateAll();
 
         case selector:
+            console.log("unselected card")
             selected = [null, null];
+            if (splitSelector[0] == "table") {
+                allow_table = false;
+            }
             return updateAll();
 
         default:
@@ -168,13 +216,35 @@ function selectCardbySelector(selector){
                             return;
                     }
                 case "table":
-                    if (+splitSelected[1] != NaN && splitSelected[1] != undefined) {
+                    if (+splitSelected[1] != NaN && +splitSelected[2] != NaN && splitSelected[1] != undefined && splitSelected[2] != undefined) {
                         switch (splitSelector[0]) {
                             case "table":
-                                return AttackWithCard(selected[0], selector) //selected = [null, null]
+                                if (+splitSelector[1] != NaN && +splitSelector[2] != NaN && splitSelector[1] != undefined && splitSelector[2] != undefined) {
+                                    return AttackWithCard(selected[0], selector) //selected = [null, null]
+                                }
+                                else {
+                                    selected = [null, null];
+                                    return updateAll();
+                                }
                             case "hand":
                                 selected[0] = selector;
                                 return updateAll();
+                            case "hero":
+                                if (+splitSelector[1] != NaN && splitSelector[1] != undefined) {
+                                    return AttackWithCard(selected[0], selector) //selected = [null, null]
+                                }
+                                else {
+                                    selected = [null, null];
+                                    return updateAll();
+                                }
+                            case "weapon":
+                                if (+splitSelector[1] != NaN && splitSelector[1] != undefined) {
+                                    return AttackWithCard(selected[0], selector) //selected = [null, null]
+                                }
+                                else {
+                                    selected = [null, null];
+                                    return updateAll();
+                                }
                             default:
                                 return;
                         }
@@ -184,7 +254,8 @@ function selectCardbySelector(selector){
                         return updateAll();
                     }
                 default:
-                    return;
+                    selected[0] = selector;
+                    return updateAll();
             }
     }
 }
@@ -192,21 +263,47 @@ function selectCardbySelector(selector){
 function PlaceCard(selector, current_player=player){
     splitSelector = selector.split(".");
     idx = GetCardBySelector(selector)
-    new_card = new PlacedCard(idx);
-    new_card.card.on_play.forEach(
-        onplay_function =>
-        {
-        onplay_function()
+    queryMana = card_types[idx].mana_cost
+    if (current_mana[+current_player] < queryMana){
+        console.log("not enough mana")
+        selected = [null, null];
+        return updateHands();
+    }
+    if (table[+current_player].length > max_table) {
+        console.log("max table surpassed")
+        selected = [null, null];
+        return updateHands();
+    }
+    else if (table[+current_player].length == max_table){
+        if (!card_types[idx].is_spell) {
+            console.log("max table reached")
+            selected = [null, null];
+            return updateHands();
         }
-    );
-    table[+current_player].push(new_card)
-    let current_cost = 0
-    current_cost = current_cost - new_card.get_card_type().mana_cost
-    updateMana(current_cost)
-    // console.log(hands)
-    // console.log(splitSelector)
-    hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
-    selected = [null, null]
+    }
+    new_card = new PlacedCard(idx);
+    console.log(idx, card_types[idx].is_weapon)
+    if (card_types[idx].is_weapon) {
+
+        heroes[selected_heroes[+current_player]].weapon = new_card
+        removeMana(queryMana, current_player)
+        hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
+        selected = [null, null]
+        console.log("placed weapon")
+    }
+    else{
+        new_card.card.on_play.forEach(
+            onplay_function =>
+            {
+            onplay_function()
+            }
+        );
+        table[+current_player].push(new_card)
+        removeMana(queryMana, current_player)
+        hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
+        selected = [null, null]
+        console.log("placed card")
+    }
     updateAll();
 }
 
@@ -218,22 +315,29 @@ function updateAll(){
     updateHands();
     updateTable();
     updateDecks();
+    updateMana();
+    updateHero();
 }
 
-function updateMana(card_cost) {
-    if (current_mana[+player] >  card_cost){
-    const manaCounter = document.getElementById(`p${player+1}Mana`)
-    manaCounter.innerHTML = ''
-    console.log(card_cost, card_cost)
-    current_mana[+player] += card_cost;
-    for (let i = 0; i < current_mana[+player]; i++){
-    const mana = document.createElement('div')
-    mana.className = 'mana'
-    document.getElementById(`p${player+1}Mana`).appendChild(mana)
+function removeMana(card_cost, current_player=player) {
+    current_mana[+current_player] -= card_cost;
+    updateMana()
+}
+
+function updateWeapon(){
+
+}
+
+function updateMana(){
+    for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
+        const manaCounter = document.getElementById(`p${playerIdx+1}Mana`)
+        manaCounter.innerHTML = `${current_mana[playerIdx]}/${max_mana[playerIdx]}`
+        for (let i = 0; i < current_mana[playerIdx]; i++){
+            const mana = document.createElement('div')
+            mana.className = 'mana'
+            manaCounter.appendChild(mana)
         }
-    }
-    else {
-        console.log("not enough mana");
+        
     }
 }
 
@@ -242,6 +346,47 @@ function updateDecks(){
         deckElem = document.getElementById(`p${index+1}Deck`)
         deckElem.innerText = "Cards: " + decks[index].length
         
+    }
+}
+
+function setHero(){
+    heroIdxs = [
+        ["Mage", "mage.png"],
+        ["Hunter", "hunter.png"],
+        ["Paladin", "paladin.png"],
+        ["Death Knight", "deathknight.png"],
+        ["Warlock", "warlock.png"],
+        ["Priest", "priest.png"],
+        ["Norbert", "norbert.png"],
+    ]
+    for (let index = 0; index < 2; index++) {
+        document.querySelector(`#p${index+1}Hero`).innerHTML = 
+        `<div class="playCard">
+            <div class="inner-row">
+                <div>
+                    <img src="heroes/${heroIdxs[selected_heroes[+index]][1]}" alt="${heroIdxs[selected_heroes[+index]][0]}">
+                </div>
+            </div>
+            <div class="inner-row">
+                <div class="defdisplay">
+                    ${heroes[selected_heroes[+index]].hp}/${heroes[selected_heroes[index]].max_hp}
+                </div>
+            </div>
+        </div>`
+        
+    }
+}
+
+function updateHero(){
+    for (let index = 0; index < 2; index++) {
+        console.log(heroes[selected_heroes[index]].hp)
+        document.querySelector(`#p${index+1}Hero .playCard .inner-row .defdisplay`).innerText = `${heroes[selected_heroes[index]].hp}/${heroes[selected_heroes[index]].max_hp}`
+        if (heroes[selected_heroes[index]].hp <= 0) {
+            current_scene = 4
+        }
+    }
+    if (current_scene == 4){
+        end_game();
     }
 }
 
@@ -408,6 +553,42 @@ function start_game(){
         mustPullCard(1)
     }
     mustPullCard(1)
+    setHero()
+}
+
+function end_game(){
+    document.querySelector("body #heroSelect").style.display = "none";
+    document.querySelector("body #game").style.display = "none";
+    document.querySelector("body #rotation").style.display = "none";
+    gameOverObj = document.querySelector("body #gameOver");
+    if (heroes[selected_heroes[+player]].hp <= 0) {
+        if (heroes[selected_heroes[+!player]].hp <= 0) {
+            gameOverObj.innerHTML = `<div class="center_row">
+        <div>Game Over!</div>
+        <div>Draw!</div>
+        </div>`
+        }
+        else{
+            gameOverObj.innerHTML = `<div class="center_row">
+        <div>Game Over!</div>
+        <div>Winner: Player ${!player+1}</div>
+        </div>`
+        }
+    }
+    else if (heroes[selected_heroes[+!player]].hp <= 0){
+        gameOverObj.innerHTML = `<div class="center_row">
+        <div>Game Over!</div>
+        <div>Winner: Player ${player+1}</div>
+        </div>`
+        
+    }
+    else{
+        gameOverObj.innerHTML = `<div class="center_row">
+        <div>No idea how you got here...</div>
+        <div>I guess it's cool tho.</div>
+        </div>`
+    }
+    gameOverObj.style.display = "unset";
 }
 
 function end_turn(){
@@ -431,6 +612,18 @@ function start_turn(){
     may_pull = true;
     pullCard();
     AddMana();
+    resetSleep();
+    updateAll();
+}
+
+function resetSleep(){
+    for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
+        for (let cardIdx = 0; cardIdx < table[playerIdx].length; cardIdx++) {
+            table[playerIdx][cardIdx].may_attack = true;
+            
+        }
+        
+    }
 }
 
 function generateDeck(nArr, legendArr){
@@ -515,7 +708,7 @@ let card_types = [
     new Card(atk=1,def=2,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Give a friendly minion +2 attack."),
     new Card(atk=4,def=6,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Destroy a random minion from your opponents hand, deck and board."),
     new Card(atk=2,def=2,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="spend one corpse to gain +1/+2"),
-    new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Destroy a minion and yout hero takes damage equal to its health."),
+    new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Destroy a minion and your hero takes damage equal to its health."),
     new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Give ur hero +5 health. Spend 3 corpses to gain 5 more and draw a card."),
     new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Draw a card. Spend two corpses to draw another."),
     new Card(atk=3,def=2,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Deal 3 damage to your hero."),
@@ -588,12 +781,12 @@ let heroes = [
     new Hero(), //Priest
     new Hero()  //norbi Xd
 ]
-let weapons = [0, 0]
 let table = [[], []]
 let hands = [[], []]
 let decks = [[], []]
-max_hand = [10, 10]
-max_table = 7
+let weapons = [0, 0]
+let max_hand = [10, 10]
+let max_table = 7
 let starter_decks = [
     generateDeck([1,2,3,4,5,6,7,8,11,12,13,14,15,16], [9,10,99]),
     generateDeck([17,18,19,20,25,26,27,28,29,30,31,32,33], [21,22,23,24]),
@@ -606,16 +799,11 @@ let selected = [null, null] // SelectedID, TargetID
 let selected_heroes = [0, 0]
 
 function AddMana() {
-
     if (max_mana[+player] < mana_cap){
-        if (max_mana[+player] < mana_cap) {
-                max_mana[+player]++
-        }
-        current_mana[+player] = max_mana[+player]
-        const mana = document.createElement('div')
-        mana.className = 'mana'
-        document.getElementById(`p${player+1}Mana`).appendChild(mana)
+        max_mana[+player]++
     }
+    current_mana[+player] = max_mana[+player]
+    updateMana();
 }
 
 class PlacedCard{
