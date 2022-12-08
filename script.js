@@ -346,7 +346,7 @@ function mustPullCard(targetPlayer){
     if (decks[+targetPlayer].length == 0) {
         return fatigue()
     }
-    if (hands[+targetPlayer].length >= max_hand[+player]) {
+    if (hands[+targetPlayer].length >= max_hand[+targetPlayer]) {
         return overdraw()
     }
     index = exclusiveRandRange(0, decks[+targetPlayer].length);
