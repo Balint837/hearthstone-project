@@ -25,10 +25,10 @@ class Card {
 
 
 class Hero{
-    constructor(hero_power=(target)=>{}){
+    constructor(hero_power=(target)=>{}, hp_description="Placeholder description"){
         this.hp = 30
         this.max_hp = 30
-        this.weapon = card_types[0]
+        this.weapon = null;
         this.fatigue = 0
         this.hero_power = hero_power
     }
@@ -67,20 +67,9 @@ function GetCardBySelector(selector){
     t = selector.split(".")
     switch (t[0]) {
         case "hand":
-            switch (t[1]){
-                case "0":
-                    return hands[+player][+t[2]];
-                case "1":
-                    return hands[+!player][+t[2]];
-            }
-            break;
+            return hands[+t[1]][+t[2]];
         case "table":
-            switch (t[1]){
-                case "0":
-                    return table[+player][+t[2]];
-                case "1":
-                    return table[+!player][+t[2]];
-            }
+            return table[+t[1]][+t[2]];
         case "heropower":
             return selector
         case "hero":
@@ -108,11 +97,15 @@ function GetIdFromIdSelector(selector){
     return +selector.split(".")[1]
 }
 
+function AttackWithCard(){
+    selected = [null, null]
+}
 
-let IdSearchFunction = (array)=>{return Array.prototype.findIndex.call(array, (element)=>{element.id == ID})}
-function GetSelectorFromId(ID, prefer_index=true){
+
+let IdSearchFunction = (array, ID)=>{return Array.prototype.findIndex.call(array, (element)=>{console.log(element.id);return element.id == ID})}
+function GetSelectorFromId(ID, prefer_index=true, default_return=null){
     
-    t = IdSearchFunction(weapons)
+    t = IdSearchFunction(weapons, ID)
     if (t != -1) {
         if (t == +player) {
             if (prefer_index) {
@@ -126,66 +119,92 @@ function GetSelectorFromId(ID, prefer_index=true){
     }
 
 
+    console.log("searching")
     for (let i = 0; i < 2; i++) {
-        t = IdSearchFunction(table[i])
+        t = IdSearchFunction(table[i], ID)
+        console.log(table[i])
+        console.log(t)
         if (t != -1) {
             return `table.${i}.${t}`
         }
     }
     
-
-    return null
+    console.log(default_return)
+    return default_return
 }
 
 function selectCardbySelector(selector){
+    console.log(selected, selector)
+    splitSelector = selector.split(".");
+    if (splitSelector[0] == "ID"){
+        selector = GetSelectorFromId(+splitSelector[1], true, selector)
+    }
+    if (selector == "table" && !allow_table){
+        selected = [null, null]
+        allow_table = true
+        return updateAll();
+    }
     switch (selected[0]) {
         case null:
             selected[0] = selector;
-            updateAll();
-            return;
+            return updateAll();
 
         case selector:
             selected = [null, null];
-            return;
+            return updateAll();
 
         default:
-            splitSelector = selector.split(".");
             splitSelected = selected[0].split(".");
             switch (splitSelected[0]) {
                 case "hand":
                     switch (splitSelector[0]) {
                         case "hand":
                             selected[0] = selector;
-                            updateHands();
-                            return;
+                            return updateAll();
                         
                         case "table":
-                            return PlaceCard(selector); //selected = [null, null]
+                            return PlaceCard(selected[0]); //selected = [null, null]
                         default:
                             return;
                     }
                 case "table":
-                    if (+splitSelected[1] != NaN) {
+                    if (+splitSelected[1] != NaN && splitSelected[1] != undefined) {
                         switch (splitSelector[0]) {
                             case "table":
                                 return AttackWithCard(selected[0], selector) //selected = [null, null]
+                            case "hand":
+                                selected[0] = selector;
+                                return updateAll();
                             default:
                                 return;
                         }
                     }
                     else {
                         selected[0] = selector;
-                        updateHands();
+                        return updateAll();
                     }
-                    break;
                 default:
                     return;
             }
     }
 }
 
-function PlaceCard(selector){
-    
+function PlaceCard(selector, current_player=player){
+    splitSelector = selector.split(".");
+    idx = GetCardBySelector(selector)
+    new_card = new PlacedCard(idx);
+    new_card.card.on_play.forEach(
+        onplay_function =>
+        {
+        onplay_function()
+        }
+    );
+    table[+current_player].push(new_card)
+    console.log(hands)
+    console.log(splitSelector)
+    hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
+    selected = [null, null]
+    updateAll();
 }
 
 function selectCardbyId(){
@@ -214,8 +233,9 @@ function updateHands(){
         handElem.innerHTML = ""
         for (let cardIdx = 0; cardIdx < hands[playerIdx].length; cardIdx++) {
             value = hands[playerIdx][cardIdx]
+            console.log(value)
             if (playerIdx == +player) {
-                handElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};" onclick="selectCardbySelector('hand.${playerIdx}.${cardIdx}')">
+                handElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};${selected[0] == `hand.${playerIdx}.${cardIdx}`?"background-color: rgb(100, 255, 100)":""}" onclick="selectCardbySelector('hand.${playerIdx}.${cardIdx}')">
                                         <div class="inner-row">
                                             <div class="description">${card_types[value].description}</div>
                                         </div>
@@ -256,11 +276,20 @@ function updateHands(){
 
 function updateTable(){
     for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
+        for (let cardIdx = 0; cardIdx < table[playerIdx].length; cardIdx++){
+            if (table[playerIdx][cardIdx].hp <= 0){
+                table[playerIdx].splice(cardIdx);
+                cardIdx--;
+            }
+        }
+    }
+
+    for (let playerIdx = 0; playerIdx < 2; playerIdx++) {
         TableElem = document.getElementById(`p${playerIdx+1}Table`)
         TableElem.innerHTML = ""
         for (let cardIdx = 0; cardIdx < table[playerIdx].length; cardIdx++) {
             value = table[playerIdx][cardIdx]
-            TableElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};" onclick="selectCardbySelector('ID.${value.id}')">
+            TableElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};${(selected[0] == `table.${playerIdx}.${cardIdx}` || selected[0] == `ID.${table[playerIdx][cardIdx].id}`) && playerIdx == +player?"background-color: rgb(100, 255, 100)":""}" onclick="selectCardbySelector('ID.${value.id}')">
                                         <div class="inner-row">
                                             <div class="description">${value.card.description}</div>
                                         </div>
@@ -272,11 +301,10 @@ function updateTable(){
                                                 ${value.card.mana_cost}
                                             </div>
                                             <div class="defdisplay">
-                                                ${value.def}
+                                                ${value.hp}
                                             </div>
                                         </div>
                                     </div>`
-            
         }
         
     }
@@ -405,7 +433,7 @@ let max_id = 0;
 let id_dict = {};
 let card_types = [
  /*nullcard */   
-        new Card(atk=0,def=0,mana_cost=max_mana+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
+        new Card(atk=0,def=0,mana_cost=mana_cap+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
     new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="For the rest of the game your Hero Power deals +1 damage."),
     new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 2 damage to an enemy minion twice."),
     new Card(atk=2,def=2,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
@@ -531,14 +559,15 @@ let card_types = [
 
 
 ];
+allow_table = true;
 let heroes = [
-    Hero(), //Mage
-    Hero(), //Hunter
-    Hero(), //Paladin
-    Hero(), //Death Knight
-    Hero(), //Warlock
-    Hero(), //Priest
-    Hero()  //norbi Xd
+    new Hero(), //Mage
+    new Hero(), //Hunter
+    new Hero(), //Paladin
+    new Hero(), //Death Knight
+    new Hero(), //Warlock
+    new Hero(), //Priest
+    new Hero()  //norbi Xd
 ]
 let weapons = [0, 0]
 let table = [[], []]
@@ -575,6 +604,7 @@ class PlacedCard{
         this.id = max_id++;
         this.card_idx = card_idx;
         this.card = this.get_card_type()
+        console.log(this.card, this.card_idx)
         this.hp = this.card.def
         this.atk = this.card.atk
         this.may_attack = this.card.instant_atk
