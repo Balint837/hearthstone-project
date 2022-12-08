@@ -119,22 +119,22 @@ function GetSelectorFromId(ID, prefer_index=true, default_return=null){
     }
 
 
-    console.log("searching")
+    // console.log("searching")
     for (let i = 0; i < 2; i++) {
         t = IdSearchFunction(table[i], ID)
-        console.log(table[i])
-        console.log(t)
+        // console.log(table[i])
+        // console.log(t)
         if (t != -1) {
             return `table.${i}.${t}`
         }
     }
     
-    console.log(default_return)
+    // console.log(default_return)
     return default_return
 }
 
 function selectCardbySelector(selector){
-    console.log(selected, selector)
+    // console.log(selected, selector)
     splitSelector = selector.split(".");
     if (splitSelector[0] == "ID"){
         selector = GetSelectorFromId(+splitSelector[1], true, selector)
@@ -200,8 +200,8 @@ function PlaceCard(selector, current_player=player){
         }
     );
     table[+current_player].push(new_card)
-    console.log(hands)
-    console.log(splitSelector)
+    // console.log(hands)
+    // console.log(splitSelector)
     hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
     selected = [null, null]
     updateAll();
@@ -233,7 +233,7 @@ function updateHands(){
         handElem.innerHTML = ""
         for (let cardIdx = 0; cardIdx < hands[playerIdx].length; cardIdx++) {
             value = hands[playerIdx][cardIdx]
-            console.log(value)
+            // console.log(value)
             if (playerIdx == +player) {
                 handElem.innerHTML += `<div class="playCard" style="z-index: ${cardIdx+1};${selected[0] == `hand.${playerIdx}.${cardIdx}`?"background-color: rgb(100, 255, 100)":""}" onclick="selectCardbySelector('hand.${playerIdx}.${cardIdx}')">
                                         <div class="inner-row">
@@ -311,26 +311,26 @@ function updateTable(){
 }
 
 function overdraw(){
-    if (hands[+player].length >= max_hand[+player]) {
         index = exclusiveRandRange(0, decks[+player].length);
         decks[+player].splice(index, 1);
         updateHands();
         updateDecks();
         return;
-    }
-    //az if ide is kellhet még, ezt késöbb töröljük ha nem
 }
-p1fatigue = 0;
-p2fatigue = 0;
+
 function fatigue(){
-    
+    heroes[selected_heroes[+player]].fatigue+=1;
+    heroes[selected_heroes[+player]].hp -= heroes[selected_heroes[+player]].fatigue;
+    console.log(heroes[selected_heroes[+player]].hp)
+    updateAll();
+    return;
 }
 
 function pullCard(){
     if (decks[+player].length == 0) {
         return fatigue()
     }
-    if (hands[+player].length >= max_hand) {
+    if (hands[+player].length >= max_hand[+player]) {
         return overdraw()
     }
     index = exclusiveRandRange(0, decks[+player].length);
@@ -346,7 +346,7 @@ function mustPullCard(targetPlayer){
     if (decks[+targetPlayer].length == 0) {
         return fatigue()
     }
-    if (hands[+targetPlayer].length >= max_hand) {
+    if (hands[+targetPlayer].length >= max_hand[+player]) {
         return overdraw()
     }
     index = exclusiveRandRange(0, decks[+targetPlayer].length);
@@ -604,7 +604,7 @@ class PlacedCard{
         this.id = max_id++;
         this.card_idx = card_idx;
         this.card = this.get_card_type()
-        console.log(this.card, this.card_idx)
+        // console.log(this.card, this.card_idx)
         this.hp = this.card.def
         this.atk = this.card.atk
         this.may_attack = this.card.instant_atk
