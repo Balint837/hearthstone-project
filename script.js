@@ -200,6 +200,9 @@ function PlaceCard(selector, current_player=player){
         }
     );
     table[+current_player].push(new_card)
+    let current_cost = 0
+    current_cost = current_cost - new_card.get_card_type().mana_cost
+    updateMana(current_cost)
     console.log(hands)
     console.log(splitSelector)
     hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
@@ -217,6 +220,22 @@ function updateAll(){
     updateDecks();
 }
 
+function updateMana(card_cost) {
+    if (current_mana[+player] >  card_cost){
+    const manaCounter = document.getElementById(`p${player+1}Mana`)
+    manaCounter.innerHTML = ''
+    console.log(card_cost, card_cost)
+    current_mana[+player] += card_cost;
+    for (let i = 0; i < current_mana[+player]; i++){
+    const mana = document.createElement('div')
+    mana.className = 'mana'
+    document.getElementById(`p${player+1}Mana`).appendChild(mana)
+        }
+    }
+    else {
+        console.log("not enough mana");
+    }
+}
 
 function updateDecks(){
     for (let index = 0; index < 2; index++) {
