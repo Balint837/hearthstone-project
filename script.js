@@ -141,6 +141,7 @@ function selectCardbySelector(selector){
     switch (selected[0]) {
         case null:
             selected[0] = selector;
+            updateAll();
             return;
 
         case selector:
@@ -155,6 +156,7 @@ function selectCardbySelector(selector){
                     switch (splitSelector[0]) {
                         case "hand":
                             selected[0] = selector;
+                            updateHands();
                             return;
                         
                         case "table":
@@ -173,6 +175,7 @@ function selectCardbySelector(selector){
                     }
                     else {
                         selected[0] = selector;
+                        updateHands();
                     }
                     break;
                 default:
