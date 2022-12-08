@@ -27,11 +27,13 @@ class Card {
 
 class Hero{
     constructor(hero_power=(target)=>{}, hp_description="Placeholder description"){
-        this.hp = 30
-        this.max_hp = 30
+        this.hp = 30;
+        this.max_hp = 30;
         this.weapon = null;
-        this.fatigue = 0
-        this.hero_power = hero_power
+        this.fatigue = 0;
+        this.hero_power = hero_power;
+        this.description = hp_description;
+        this.may_attack = true;
     }
     /*hero_power is prob an instance for now, can't think of anything yet*/
 }
@@ -122,8 +124,6 @@ function AttackWithCard(attacker, target){
             selected = [null, null];
             return updateAll();
         case "weapon":
-            heroes[selected_heroes[+splitTarget[1]]].weapon.hp -= attackerCard.atk;
-            attackerCard.may_attack = false;
             selected = [null, null];
             return updateAll();
         default:
@@ -139,6 +139,79 @@ function AttackWithCard(attacker, target){
     updateAll();
     allow_table = true;
 }
+
+function DamageAnything(target, damage){
+    splitTarget = target.split(".")
+    console.log(splitTarget)
+    if (target[0] == "random") {
+        if (table[+!player].length == 0) {
+            return false;
+        }
+        table[+!player][exclusiveRandRange(0, table[+!player].length)].hp -= damage;
+        updateAll();
+        return true;
+    }
+    targetCard = GetCardBySelector(target)
+    switch (typeof targetCard) {
+        case typeof card_types[0]:
+            targetCard.hp -= damage;
+            selected = [null, null]
+            updateAll();
+            return true;
+        case typeof "":
+            switch (splitTarget[0]) {
+                case "hero":
+                    if (+splitTarget[1] != NaN) {
+                        heroes[selected_heroes[+splitTarget[1]]].hp -= damage;
+                    }
+                    else{
+                        heroes[selected_heroes[+!player]].hp -= damage;
+                    }
+                    selected = [null, null]
+                    updateAll();
+                    return true;
+                default:
+                    break;
+            }
+        default:
+            break;
+    }
+    selected = [null, null]
+    updateAll();
+    return false
+
+}
+
+function UseHeroPower(target){
+    if (current_mana[+player] < 2){
+        console.log("not enough mana for hp")
+        selected = [null, null];
+        return updateAll();
+    }
+    current_hero = heroes[selected_heroes[+player]]
+    if (!current_hero.hero_power(target)) {
+        selected = [null, null]
+        return updateAll();
+    }
+    current_hero.may_attack = false;
+    updateAll();
+}
+
+
+function SummonMinion(idx){
+    if (table[+current_player].length >= max_table) {
+        console.log("max table reached")
+        selected = [null, null];
+        return updateAll();
+    }
+    new_card = new PlacedCard(idx);
+    table[+current_player].push(new_card)
+    selected = [null, null]
+    console.log("summoned card")
+    updateAll();
+}
+
+
 
 
 let IdSearchFunction = (array, ID)=>{return Array.prototype.findIndex.call(array, (element)=>{console.log(element.id);return element.id == ID})}
@@ -252,6 +325,22 @@ function selectCardbySelector(selector){
                     else {
                         selected[0] = selector;
                         return updateAll();
+                    }
+                case "heropower":
+                    switch (splitSelector[0]) {
+                        case "table":
+                            if (+splitSelector[1] != NaN && +splitSelector[2] != NaN) {
+                                return UseHeroPower(selector) //selected = [null, null]
+                            }
+                            else {
+                                selected = [null, null];
+                                return updateAll();
+                            }
+                        case "hero":
+                            return UseHeroPower(selector);
+                        default:
+                            selected = [null, null];
+                            return updateAll();
                     }
                 default:
                     selected[0] = selector;
@@ -374,13 +463,27 @@ function setHero(){
             </div>
         </div>`
         
+        document.querySelector(`#p${index+1}HeroPower`).innerHTML = 
+        `<div class="playCard" style="${(selected[0] == `heropower.${index}` || selected[0] == "heropower")?"background-color: rgb(100, 255, 100)":""}">
+            <div class="inner-row">
+                <div class="description">
+                    ${heroes[selected_heroes[+index]].description}
+                </div>
+            </div>
+            <div class="inner-row">
+                <div class="manadisplay">
+                    2
+                </div>
+            </div>
+        </div>`
+        
     }
+    updateWeapon();
 }
 
 function updateHero(){
     for (let index = 0; index < 2; index++) {
-        console.log(heroes[selected_heroes[index]].hp)
-        document.querySelector(`#p${index+1}Hero .playCard .inner-row .defdisplay`).innerText = `${heroes[selected_heroes[index]].hp}/${heroes[selected_heroes[index]].max_hp}`
+        setHero();
         if (heroes[selected_heroes[index]].hp <= 0) {
             current_scene = 4
         }
@@ -622,7 +725,7 @@ function resetSleep(){
             table[playerIdx][cardIdx].may_attack = true;
             
         }
-        
+        heroes[selected_heroes[playerIdx]].may_attack = true;
     }
 }
 
@@ -643,6 +746,7 @@ let current_mana = [0, 0]
 let player = false
 let max_id = 0;
 let id_dict = {};
+let spell_bonus = 0;
 let card_types = [
  /*nullcard */   
         new Card(atk=0,def=0,mana_cost=mana_cap+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
@@ -773,7 +877,7 @@ let card_types = [
 ];
 allow_table = true;
 let heroes = [
-    new Hero(), //Mage
+    new Hero(hero_power=(target)=>{return DamageAnything(target, 1)}), //Mage
     new Hero(), //Hunter
     new Hero(), //Paladin
     new Hero(), //Death Knight
