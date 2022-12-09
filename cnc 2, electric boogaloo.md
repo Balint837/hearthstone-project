@@ -30,28 +30,28 @@ If these cannot describe an ability then plain text is used to describe them. \
 
 Mage
 ------------
-- 1:1. 0,0,1, spell ur hp deals +1 dmg
+- 1:1. 0,0,1, spell ur hp deals +1 dmg (ha nem leeht megoldani: onplay deal 3 dmg)
 - 2:2. 0,0,1, spell deal 2 dmg twice to a minion (if divine shield, only once)
 - 3:3. 2,2,1
-- 4:4. 0,0,2, spell deal 2 dmg and return this to your deck
+- 4:4. 0,0,2, spell deal 2 dmg and return this to your deck (ha nem lehet megoldani: onplay deal 3 dmg twice)
 - 5:5. 2,2,2, on play ur next spell does +2 dmg
 - 6:6. 2,3,2, on play draw a spell
-- 7:7. 0,0,2, spell until your next turn you can only take 1 dmg at a time
-- 8:8. 0,0,7, spell, deal 5 dmg to enemy minions (all or one?????)
+- 7:7. 0,0,2, spell heal your hero 5 heathpoints
+- 8:8. 0,0,7, spell, deal 5 dmg to all enemy minions
 - 9:9*. 8,8,8, if you dealt 10 dmg with heropower deal 10 dmg to all enemys
 - 10:10*. 5,7,7, if you cast a spell add a '4 mana deal 6 dmg spell' (11:11)
 - 11:11. 0,0,4, spell, deal 6 dmg
 - 12:12. 0,0,10, deal 10 dmg
-- 13:13. 4,5,6, recast the last spell you've casted, , , , , false, false, false
+- 13:13. 4,5,5, , , , , , false, false, false
 - 14:14. 0,0,4, transform a minion into a 1/1 sheep (102:+1), , , , , false, false, true
-- 15:15. 3,6,4, , , , freeze the attacked target(cant attack in the opponets turn next turn)
-- 16:16. 3,5,4, cast ur hero power on all enemy minions, , , , , false, false, false
+- 15:15. 3,6,4, on play destroy a random enemy minion
+- 16:16. 3,5,4, on play deal 3 damage to all enemy minions, , , , , false, false, false
 
 - 102:+1. 1,1,1
 
 total: 30
 
-99: +*. (WEAPON) 0,3,6, , draw 3 cards until your hand is full (you dont overdraw from this but from turn start draw you will), , , , false, false, false
+<!-- 99: +*. (WEAPON) 0,3,6, , draw 3 cards until your hand is full (you dont overdraw from this but from turn start draw you will), , , , false, false, false -->
 
 Hunter
 ------------
@@ -60,7 +60,7 @@ Hunter
 - 19:3. 1,1,1, summon a copy of this to the board, , , , , false, true, false
 - 20:4. 0,0,3, destroy a random enemy minion, , , , , false, false, true
 - 21:5*. 2,4,7, summon an 8/8 instant_attack (23:7), , , , , false, false, false
-- 22:6*. 3,4,3 , , , , , , false, false, false (spells are instakill)
+- 22:6*. 5,6,3, , , , , , false, false, false 
 - 23:7*. 8,8,8, , , , , , false, true, false
 - 24:8*. 5,5,8, summon 3 minions from ur hand (takes them out from hand, on_play doesnt activate), , , , , false, false, false
 - 25:9. 0,0,10, summon 4 3/5 (104:+1) minions, , , , , false, false, true
@@ -68,7 +68,7 @@ Hunter
 - 27:11. 0,0,4, deal 6 dmg, , , , , false, false, true
 - 28:12. 3,3,4, , , summon two 1/1 (102:+1.) minions, , , false, false, false
 - 29:13. 0,0,4, deal 3 dmg to two random enemy minions, , , , , false, false, true
-- 30:14. 0,0,3, deal 3 dmg your next hp has +2 dmg (buff), , , , , false, false, true 
+- 30:14. 0,0,3, deal 4 dmg , , , , , false, false, true 
 - 31:15. 1,2,3, , , summon a 4/4, , , false, false, false
 - 32:16. 2,5,3, , , , , , false, false, false
 - 33:17. 0,0,1, buff 1+/+1 + summon 1/1 + add 1/1 to hand (102:+1), , , , , false, false, true
@@ -82,13 +82,13 @@ total:30
 
 Paladin
 ------------
-- 34:1. 1,1,1, , , , , , true, false, false (DIVINE SHIELD) 
+- 34:1. 1,1,1, , , , , , true, false, false
 - 35:2. 1,1,1, Draw 1, , , false, false, false
 - 36:3. 0,0,1, heal 2, put this back to your hand, , , , , false, false, true
-- 37:4. 3,2,2, give divine shield to minion, , , , , false, false, false
+- 37:4. 3,2,2, give +2 heath to a friendly minion, , , , , false, false, false
 - 38:5. 0,0,2, set all minions health to 1, , , , , false, false, true
 - 39:6. 2,3,2, , , , , summon a 2/2 (107:+2), false, false, false
-- 40:7.* 3,3,3, , , give a fm +3/+3 and give the fm the same on_death effect, , , false, false, false
+- 40:7.* 3,3,3, give a fm +3/+3, ,  , , , false, false, false
 - 41:8. 0,0,4, give a minion +4/+4, , , , , false, false, true
 - 42:9. 0,0,4, summon 5 1/1 minions (102:+1), , , , , false, false, true
 - 43:10. 5,5,5, summon another 5/5 (43:10) if you dont have any other minions, , , , , true, false, false
@@ -103,7 +103,7 @@ Paladin
 - 111+2. 1,1,1, , , , , , false, true, false
 
 total:30
-
+<!-- 
 Death Knight
 ------------
 - 50:1*. 3,5,5, , , add this to your hand but costs health instead (103:+1), , , true, false, false
@@ -157,7 +157,7 @@ Warlock
 total:30
 
 100: +*. (WEAPON) 0,3,5, , summon a minion from hand for free, , , , false, false, false
-
+ -->
 
 
 Priest
@@ -172,19 +172,19 @@ Priest
 - 90:8* 4,6,7, shuffle a copy of your opponents deck into your deck
 - 91:9* 0,0,9, summon 3 minions from your deck onto your board, , , , , false, false, true
 - 92:10. 2,6,5, , , Destroy a random enemy minion, , , true, false, false
-- 93:11. 5,4,4, , , , , deal 4 dmg to both heroes, false, false, false
+- 93:11. 5,4,4, , , , , on spell: deal 4 dmg to both heroes, false, false, false
 - 94:12. 0,0,4, copy 2 cards from your opponents hand add it to your hand, , , , , false, false, true
 - 95:13. 5,5,5, restore 5 heath to your hero , , , , , false, false, false
 - 96:14. 2,3,2, +0/+2 to a friendly minion, , , , , false, false, false
-- 97:15. 4,3,4, , , deal 3 dmg to enemy hero, , , false, false, false
+- 97:15. 4,3,4, deal 3 dmg to enemy hero, , , , , false, false, false
 - 98:16. 6,6,6, , , restore 8 health to all friendly characters (including hero), , , true, false, false
 
 - 110:+1. 5,5,5,  , , , , , false, false, false
 
 total:30
-
+<!-- 
 101: +*. (WEAPON) 0,3,3, , , , , if you cast 3 spells this turn summon a 5/5 minion (110:+1), false, false, false
-
+ -->
 
 
 
