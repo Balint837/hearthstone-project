@@ -73,20 +73,33 @@ function GetCardBySelector(selector){
             case "random":
                 switch(t[1]){
                     case "hand":
-if (+t[2] != NaN){
-    if (hands[+t[2]].length == 0){
-    return null;
-    }
-    return randChoices(hands[+t[2]], 1)[0]
-}
-return;
-case "table":
-return
-case "deck":
-return;
-default:
-return false;
-}
+                        if (+t[2] == NaN){
+                            return false;
+                        }
+                        
+                        if (hands[+t[2]].length == 0){
+                            return null;
+                        }
+                        return randChoices(hands[+t[2]], 1)[0]
+                    case "table":
+                        if (+t[2] == NaN){
+                            return false;
+                        }
+                        if (table[+t[2]].length == 0){
+                            return null;
+                        }
+                        return randChoices(table[+t[2]], 1)[0]
+                    case "deck":
+                        if (+t[2] == NaN){
+                            return false;
+                        }
+                        if (decks[+t[2]].length == 0){
+                            return null;
+                        }
+                        return randChoices(decks[+t[2]], 1)[0]
+                    default:
+                        return false;
+                    }
             case "hand":
                 return hands[+t[1]][+t[2]];
             case "table":
@@ -160,7 +173,10 @@ function AttackWithCard(attacker, target){
 function DamageAnything(target, damage){
     splitTarget = target.split(".")
     console.log(splitTarget)
-    if (target[0] == "random") {
+    if (splitTarget[0] == "random") {
+        if (splitTarget[1] != "table") {
+            return false;
+        }
         if (table[+!player].length == 0) {
             return false;
         }
