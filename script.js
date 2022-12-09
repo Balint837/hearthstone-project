@@ -70,6 +70,23 @@ function GetCardBySelector(selector){
     try {
         t = selector.split(".")
         switch (t[0]) {
+            case "random":
+                switch(t[1]){
+                    case "hand":
+if (+t[2] != NaN){
+    if (hands[+t[2]].length == 0){
+    return null;
+    }
+    return randChoices(hands[+t[2]], 1)[0]
+}
+return;
+case "table":
+return
+case "deck":
+return;
+default:
+return false;
+}
             case "hand":
                 return hands[+t[1]][+t[2]];
             case "table":
@@ -672,6 +689,13 @@ function exclusiveRandRange(a, b){
     return Math.floor(Math.random()*(b-a)+a)
 }
 
+function randChoices(array, n1){
+   temp = [];
+for (let n = 0; n < n1; n++){
+   temp.push(array[exclusiveRandRange(0, array.length)]);
+}
+   return temp;
+}
 function start_game(){
     heroSelectObj = document.querySelector("body #heroSelect");
     rotateObj = document.querySelector("body #rotation");
