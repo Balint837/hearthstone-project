@@ -34,6 +34,7 @@ class Hero{
         this.hero_power = hero_power;
         this.description = hp_description;
         this.may_attack = true;
+        this.hp_buff = 0;
     }
     /*hero_power is prob an instance for now, can't think of anything yet*/
 }
@@ -184,6 +185,30 @@ function DamageAnything(target, damage){
         updateAll();
         return true;
     }
+    if (splitTarget.length < 3) {
+        
+        switch (splitTarget[0]) {
+            case "table":
+                if (+splitTarget[1] == NaN) {
+                    return false;
+                }
+                for (let index = 0; index < table[+splitTarget[1]].length; index++) {
+                    DamageAnything(`table.${+splitTarget[1]}.${index}`, damage);
+                }
+                return true;
+            case "all":
+                if (+splitTarget[1] == NaN) {
+                    return false;
+                }
+                for (let index = 0; index < table[+splitTarget[1]].length; index++) {
+                    DamageAnything(`table.${+splitTarget[1]}.${index}`, damage);
+                }
+                DamageAnything(`hero.${+splitTarget[1]}`, damage);
+                return true;
+            default:
+                break;
+        }
+    }
     targetCard = GetCardBySelector(target)
     switch (typeof targetCard) {
         case typeof card_types[0]:
@@ -196,9 +221,15 @@ function DamageAnything(target, damage){
                 case "hero":
                     if (+splitTarget[1] != NaN) {
                         heroes[selected_heroes[+splitTarget[1]]].hp -= damage;
+                        if (heroes[selected_heroes[+splitTarget[1]]].hp > heroes[selected_heroes[+splitTarget[1]]].max_hp){
+                            heroes[selected_heroes[+splitTarget[1]]].hp = heroes[selected_heroes[+splitTarget[1]]].max_hp
+                        }
                     }
                     else{
                         heroes[selected_heroes[+!player]].hp -= damage;
+                        if (heroes[selected_heroes[+!player]].hp > heroes[selected_heroes[+!player]].max_hp){
+                            heroes[selected_heroes[+!player]].hp = heroes[selected_heroes[+!player]].max_hp
+                        }
                     }
                     selected = [null, null]
                     updateAll();
@@ -237,13 +268,13 @@ function UseHeroPower(target){
 
 
 function SummonMinion(idx){
-    if (table[+current_player].length >= max_table) {
+    if (table[+player].length >= max_table) {
         console.log("max table reached")
         selected = [null, null];
         return updateAll();
     }
     new_card = new PlacedCard(idx);
-    table[+current_player].push(new_card)
+    table[+player].push(new_card)
     selected = [null, null]
     console.log("summoned card")
     updateAll();
@@ -267,11 +298,15 @@ function DestroyCard(target){
     if (typeof tempCard != typeof card_types[0]) {
         return false;
     }
+    if (tempCard == null){
+        return true;
+    }
     RemoveCard(target);
+    console.log(tempCard, tempCard.on_death)
     tempCard.on_death.forEach(ondeath_function => {
         ondeath_function();
     });
-
+    return true;
 }
 
 function RemoveCard(target){
@@ -374,6 +409,7 @@ function CopyBySelectorToHand(target, current_player=player){
 
 
 let IdSearchFunction = (array, ID)=>{return Array.prototype.findIndex.call(array, (element)=>{console.log(element.id);return element.id == ID})}
+let UniversalIndexer = (array, value, func)=>{return Array.prototype.findIndex.call(array, func)}
 function GetSelectorFromId(ID, prefer_index=true, default_return=null){
     
     t = IdSearchFunction(weapons, ID)
@@ -549,9 +585,54 @@ function PlaceCard(selector, current_player=player){
         table[+current_player].push(new_card)
         removeMana(queryMana, current_player)
         hands[+current_player].splice(+splitSelector[splitSelector.length-1], 1)
+        if (new_card.is_spell){
+            RunOnSpells();
+        }
         selected = [null, null]
         console.log("placed card")
     }
+    updateAll();
+}
+
+
+function MustPlaceLastHand(){
+    idx = hands[+player].at(-1)
+    if (table[+player].length > max_table) {
+        console.log("max table surpassed")
+        hands[+player].splice(hands[+player].length, 1)
+        selected = [null, null];
+        return updateHands();
+    }
+    else if (table[+player].length == max_table){
+        if (!card_types[idx].is_spell) {
+            console.log("max table reached")
+            hands[+player].splice(hands[+player].length, 1)
+            selected = [null, null];
+            return updateHands();
+        }
+    }
+    new_card = new PlacedCard(idx);
+    console.log(idx, card_types[idx].is_weapon)
+    if (card_types[idx].is_weapon) {
+        heroes[selected_heroes[+player]].weapon = new_card
+        selected = [null, null]
+        console.log("placed weapon")
+    }
+    else{
+        new_card.card.on_play.forEach(
+            onplay_function =>
+            {
+            onplay_function()
+            }
+        );
+        table[+player].push(new_card)
+        if (new_card.is_spell){
+            RunOnSpells();
+        }
+        selected = [null, null]
+        console.log("placed card")
+    }
+    hands[+player].splice(hands[+player].length, 1)
     updateAll();
 }
 
@@ -780,12 +861,59 @@ function mustPullCard(targetPlayer){
     decks[+targetPlayer].splice(index, 1);
     hands[+targetPlayer].push(value);
     updateHands();
-    updateDecks()
+    updateDecks();
     return;
+}
+
+function DrawSpell(current_player=player){
+    temp = []
+    for (let index = 0; index < decks[+current_player].length; index++) {
+        const element = decks[+current_player][index];
+        if (card_types[element].is_spell) {
+            temp.push(index)
+        }
+    }
+    rIdx = exclusiveRandRange(0, temp.length)
+    cardType = decks[+current_player][temp[rIdx]]
+    decks.splice(temp[rIdx], 1)
+    hands[+current_player].push(cardType);
+    updateHands();
+    updateDecks();
+    return 
+    
+}
+
+function GetRandomEnemySelector(){
+    if (table[+!player].length != 0) {
+        return `table.${+!player}.${exclusiveRandRange(0, table[+!player].length)}`
+    }
+    return `table.${+!player}.0`;
+}
+
+function GetRandomFriendlySelector(){
+    if (table[+player].length != 0) {
+        return `table.${+player}.${exclusiveRandRange(0, table[+player].length)}`
+    }
+    return `table.${+player}.0`;
+}
+
+function GetRandomSelector(){
+    tPlay = exclusiveRandRange(0, 2)
+    if (table[tPlay].length == 0) {
+        tPlay = +!tPlay
+    }
+    if (table[tPlay].length == 0) {
+        return "table.0.0"
+    }
+    return `table.${tPlay}.${exclusiveRandRange(0, table[tPlay].length)}`
 }
 
 function HeroSelect(player, hero){
     selected_heroes[player] = hero
+}
+
+function RunOnSpells(){
+
 }
 
 function shuffleArray(arr){
@@ -899,6 +1027,18 @@ function generateDeck(nArr, legendArr){
     return nArr.concat(nArr).concat(legendArr)
 }
 
+function RemoveNulls(){
+    t = []
+    for (let pIdx = 0; pIdx < 2; pIdx++) {
+        for (let handIdx = 0; handIdx < hands[pIdx]; handIdx++) {
+            if (hands[pIdx][handIdx] != null) {
+                t.push(hands[pIdx][handIdx])
+            }
+        }
+        hands[pIdx] = t;
+    }
+}
+
 
 ()=>{
     DamageObjects({"thisID": card.id})
@@ -913,41 +1053,43 @@ let player = false
 let max_id = 0;
 let id_dict = {};
 let spell_bonus = 0;
+let next_spell = [0, 0]
+let last_herop = [0, 0]
 let card_types = [
  /*nullcard */   
         new Card(atk=0,def=0,mana_cost=mana_cap+1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
-    new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 3 damage."),
-    new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 2 damage to an enemy minion twice."),
+    new Card(atk=0,def=0,mana_cost=1,on_play=[()=>{heroes[selected_heroes[+player]].hp_buff += 1}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 3 damage to an enemy minion."),
+    new Card(atk=0,def=0,mana_cost=1,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 2);DamageAnything(temp, 2)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 2 damage to an enemy minion twice."),
     new Card(atk=2,def=2,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
-    new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deals 2 damage and put a copy of this card into your deck."),
-    new Card(atk=2,def=2,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Deal 2 damage."),
-    new Card(atk=2,def=3,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Draw a spell."),
-    new Card(atk=0,def=0,mana_cost=2,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Heal your hero 5 hp."),
-    new Card(atk=0,def=0,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 5 damage to all enemy minions."),
-    new Card(atk=8,def=8,mana_cost=8,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="If you dealt 10 damage with your hero power, deal 10 damage to all enemys."), // Legendary
-    new Card(atk=5,def=7,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="If you cast a spell add a '4 mana, deal 6 damage' card to your hand."),
-    new Card(atk=0,def=0,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 6 damage."),
-    new Card(atk=0,def=0,mana_cost=10,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 10 damage"),
+    new Card(atk=0,def=0,mana_cost=2,on_play=[()=>{ShuffleToDeck(4)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deals 2 damage and put a copy of this card into your deck."),
+    new Card(atk=2,def=2,mana_cost=2,on_play=[()=>{next_spell[+player] = 2}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Deal 2 damage."),
+    new Card(atk=2,def=3,mana_cost=2,on_play=[()=>{DrawSpell()}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Draw a spell."),
+    new Card(atk=0,def=0,mana_cost=2,on_play=[()=>{DamageAnything(`hero.${+player}`, -5)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Heal your hero 5 hp."),
+    new Card(atk=0,def=0,mana_cost=7,on_play=[()=>{DamageAnything(`table.${+!player}`, 5)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 5 damage to all enemy minions."),
+    new Card(atk=8,def=8,mana_cost=8,on_play=[()=>{if (last_herop[+player] >= 10){DamageAnything(`table.${+!player}`, 10)}}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="If you dealt 10 damage with your hero power, deal 10 damage to all enemys."), // Legendary
+    new Card(atk=5,def=7,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[()=>{if (+player == (selected_heroes[0]==0?0:1)){ShuffleToDeck(11)}}], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="If you cast a spell add a '4 mana, deal 6 damage' card to your hand."),
+    new Card(atk=0,def=0,mana_cost=4,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 6)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 6 damage."),
+    new Card(atk=0,def=0,mana_cost=10,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 10)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 10 damage"),
     new Card(atk=4,def=5,mana_cost=6,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
-    new Card(atk=0,def=0,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Transform a minion into a 1/1 sheep."),
-    new Card(atk=3,def=6,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Destroy a random enemy minion."),
-    new Card(atk=3,def=5,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Deal 3 damage to all enemy minions."),
-    new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 2 damage."),
-    new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Set a minion's health to 1."),
-    new Card(atk=1,def=1,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon a copy of this on the board."),
-    new Card(atk=0,def=0,mana_cost=3,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Destroy a random enemy minion."),
-    new Card(atk=2,def=4,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="If your hand dosent have any duplicates, summon an 8/8 with Charge."),
+    new Card(atk=0,def=0,mana_cost=4,on_play=[()=>{temp=GetRandomSelector();TransformMinion(temp, 102)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Transform a minion into a 1/1 sheep."),
+    new Card(atk=3,def=6,mana_cost=4,on_play=[()=>{DestroyCard(`random.table.${+!player}`)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Destroy a random enemy minion."),
+    new Card(atk=3,def=5,mana_cost=4,on_play=[()=>{DamageAnything(`table.${+!player}`, 3)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Deal 3 damage to all enemy minions."),
+    new Card(atk=0,def=0,mana_cost=1,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 2)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 2 damage."),
+    new Card(atk=0,def=0,mana_cost=1,on_play=[()=>{tempCard=GetCardBySelector(GetRandomEnemySelector());if (typeof tempCard == typeof card_types[0]){tempCard.hp=1}}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Set a minion's health to 1."),
+    new Card(atk=1,def=1,mana_cost=1,on_play=[()=>{SummonMinion(19)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon a copy of this on the board."),
+    new Card(atk=0,def=0,mana_cost=3,on_play=[()=>{DestroyCard(`random.table.${+!player}`)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Destroy a random enemy minion."),
+    new Card(atk=2,def=4,mana_cost=7,on_play=[()=>{SummonMinion(23)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon an 8/8 with Charge."),
     new Card(atk=3,def=4,mana_cost=3,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Your spells are Poisonous."),
     new Card(atk=8,def=8,mana_cost=8,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=true, is_spell=false, is_protected=false, description="Charge"),
-    new Card(atk=5,def=5,mana_cost=8,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon 3 minions from your hand."),
-    new Card(atk=0,def=0,mana_cost=10,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Summon four 3/5 minions they have Charge."),
-    new Card(atk=0,def=0,mana_cost=7,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Summon two minions from your deck that cost 5 or less."),
-    new Card(atk=0,def=0,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 6 damage to a minion, access damage hits the enemy."),
-    new Card(atk=3,def=3,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon two 1/1 minions."),
-    new Card(atk=0,def=0,mana_cost=3,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deals 3 damage to two random enemy minions."),
-    new Card(atk=0,def=0,mana_cost=4,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 3 damage, your next hero power deals 2 more damage."),
-    new Card(atk=1,def=2,mana_cost=3,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon a 4/4 minion."),
-    new Card(atk=2,def=5,mana_cost=3,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
+    new Card(atk=5,def=5,mana_cost=8,on_play=[()=>{temp=randChoices([...Array(hands[+player].length).keys()], 3);for(let i = 0; i<3; i++){SummonMinion(hands[+player][temp[i]])}for(let i = 0; i<3; i++){hands[+player][temp[i]]=null};RemoveNulls();}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon 3 minions from your hand."),
+    new Card(atk=0,def=0,mana_cost=10,on_play=[()=>{SummonMinion(102);SummonMinion(102);SummonMinion(102)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Summon four 3/5 minions they have Charge."),
+    new Card(atk=0,def=0,mana_cost=7,on_play=[()=>{mustPullCard(player);mustPullCard(player);MustPlaceLastHand();MustPlaceLastHand()}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Summon two minions from your deck that cost 5 or less."),
+    new Card(atk=0,def=0,mana_cost=4,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 6)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 6 damage to a minion."),
+    new Card(atk=3,def=3,mana_cost=4,on_play=[], on_turnend=[], on_death=[()=>{SummonMinion(102)}], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon two 1/1 minions on death."),
+    new Card(atk=0,def=0,mana_cost=3,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 3);temp=GetRandomEnemySelector();DamageAnything(temp, 3)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deals 3 damage to two random enemy minions."),
+    new Card(atk=0,def=0,mana_cost=4,on_play=[()=>{temp=GetRandomEnemySelector();DamageAnything(temp, 4)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Deal 3 damage, your next hero power deals 2 more damage."),
+    new Card(atk=1,def=2,mana_cost=3,on_play=[], on_turnend=[], on_death=[()=>{SummonMinion(105)}], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Summon a 4/4 minion."),
+    new Card(atk=2,def=5,mana_cost=3,on_play=[()=>{temp=GetRandomFriendlySelector();BuffCard(temp, "1 1");SummonMinion(102);ShuffleToDeck(102)}], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description=""),
     new Card(atk=0,def=0,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=true, is_protected=false, description="Gives a minion +1/+1, summon a 1/1 minion and give a '1 mana 1/1' minion into your hand"),
     new Card(atk=1,def=1,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=true, description="Divine Shield"),
     new Card(atk=1,def=1,mana_cost=1,on_play=[], on_turnend=[], on_death=[], on_attack=[], on_spell=[], on_damage=[], is_taunt=false, instant_atk=false, is_spell=false, is_protected=false, description="Draw a card."),
@@ -1043,8 +1185,8 @@ let card_types = [
 ];
 allow_table = true;
 let heroes = [
-    new Hero(hero_power=(target)=>{return DamageAnything(target, 1)}, "Deal 1 damage to anything."), //Mage
-    new Hero(), //Hunter
+    new Hero(hero_power=(target)=>{if (DamageAnything(target, heroes[0].hp_buff+1)) {heroes[0].hp_buff+=1;last_herop[+player]=heroes[0].hp_buff;return true}return false;}, "Deal 1 (+buff) damage to anything."), //Mage
+    new Hero(hero_power=()=>{DamageAnything(`hero.${+!player}`, 2)}, "Deal 2 dmg to enemy hero."), //Hunter
     new Hero(), //Paladin
     new Hero(), //Death Knight
     new Hero(), //Warlock
