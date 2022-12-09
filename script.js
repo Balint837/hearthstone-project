@@ -189,6 +189,10 @@ function UseHeroPower(target){
         return updateAll();
     }
     current_hero = heroes[selected_heroes[+player]]
+    if (!current_hero.may_attack) {
+        selected = [null, null]
+        return updateAll();
+    }
     if (!current_hero.hero_power(target)) {
         selected = [null, null]
         return updateAll();
@@ -209,6 +213,36 @@ function SummonMinion(idx){
     selected = [null, null]
     console.log("summoned card")
     updateAll();
+}
+
+
+function TransformMinion(target, idx){
+    splitTarget = target.split(".")
+    if (splitTarget[0] != "table") {
+        console.log("disallowed transform")
+        selected = [null, null];
+        return updateAll();
+    }
+    table[+splitTarget[1]][+splitTarget[2]] = new PlacedCard(idx);
+    selected = [null, null]
+    console.log("transformed card")
+    updateAll();
+}
+
+
+function CopyBySelectorToHand(target, current_player=player){
+    temp = GetCardBySelector(target)
+    splitTarget = target.split(".");
+    switch (typeof temp) {
+        case typeof card_types[0]:
+            hands[+current_player].push(temp.card_idx)
+            return true;
+        case typeof 0:
+            hands[+current_player].push(temp)
+            return true;
+        default:
+            return false;
+    }
 }
 
 
@@ -877,7 +911,7 @@ let card_types = [
 ];
 allow_table = true;
 let heroes = [
-    new Hero(hero_power=(target)=>{return DamageAnything(target, 1)}), //Mage
+    new Hero(hero_power=(target)=>{return DamageAnything(target, 1)}, "Deal 1 damage to anything."), //Mage
     new Hero(), //Hunter
     new Hero(), //Paladin
     new Hero(), //Death Knight

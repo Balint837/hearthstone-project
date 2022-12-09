@@ -83,6 +83,20 @@ div[onclick]:hover{
     flex: 1;
 }
 
+.row3-side{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex: 1;
+}
+
+.row3-mid{
+    width: 40%;
+    height: 100%;
+    display: flex;
+    flex: 1;
+}
+
 
 .row2-small{
     top: 50%;
