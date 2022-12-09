@@ -302,7 +302,7 @@ function DestroyCard(target){
         return true;
     }
     RemoveCard(target);
-    console.log(tempCard, tempCard.on_death)
+    console.log(tempCard, tempCard.card.on_death)
     tempCard.on_death.forEach(ondeath_function => {
         ondeath_function();
     });
