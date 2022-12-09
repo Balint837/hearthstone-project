@@ -249,6 +249,97 @@ function SummonMinion(idx){
     updateAll();
 }
 
+function BuffCard(target, values){
+    values = values.split(" ")
+    atkbuff = +values[0]
+    defbuff = +values[1]
+    tempCard = GetCardBySelector(target)
+    if (typeof tempCard != typeof card_types[0]) {
+        return false;
+    }
+    tempCard.atk += atkbuff;
+    tempCard.hp += defbuff;
+}
+
+function DestroyCard(target){
+    splitTarget = target.split(".");
+    tempCard = GetCardBySelector(target);
+    if (typeof tempCard != typeof card_types[0]) {
+        return false;
+    }
+    RemoveCard(target);
+    tempCard.on_death.forEach(ondeath_function => {
+        ondeath_function();
+    });
+
+}
+
+function RemoveCard(target){
+    splitTarget = target.split(".");
+    switch (splitTarget) {
+        case "random":
+            switch (splitTarget[1]) {
+                case "table":
+                    if (+splitTarget[2] == NaN) {
+                        return false
+                    }
+                    if (table[+splitTarget[2]].length == 0) {
+                        return false;
+                    }
+                    table[+splitTarget[2]].splice(exclusiveRandRange(0, table[+splitTarget[2]].length), 1)
+                    return true;
+                case "hand":
+                    if (+splitTarget[2] == NaN) {
+                        return false
+                    }
+                    if (hands[+splitTarget[2]].length == 0) {
+                        return false;
+                    }
+                    hands[+splitTarget[2]].splice(exclusiveRandRange(0, hands[+splitTarget[2]].length), 1)
+                    return true;
+                case "deck":
+                    if (+splitTarget[2] == NaN) {
+                        return false
+                    }
+                    if (decks[+splitTarget[2]].length == 0) {
+                        return false;
+                    }
+                    decks[+splitTarget[2]].splice(exclusiveRandRange(0, decks[+splitTarget[2]].length), 1)
+                    return true;
+                default:
+                    return false;
+            }
+        case "table":
+            if (+splitTarget[1] == NaN || +splitTarget[2] == NaN) {
+                return false;
+            };
+            table[+splitTarget[1]].splice(+splitTarget[2], 1)
+            return true;
+        case "hand":
+            if (+splitTarget[1] == NaN || +splitTarget[2] == NaN) {
+                return false;
+            };
+            hands[+splitTarget[1]].splice(+splitTarget[2], 1)
+            return true;
+        case "deck":
+            if (+splitTarget[1] == NaN || +splitTarget[2] == NaN) {
+                return false;
+            };
+            decks[+splitTarget[1]].splice(+splitTarget[2], 1)
+            return true;
+        default:
+            return false;
+    }
+}
+
+function ShuffleToDeck(idx, current_player=player){
+    if (idx >= card_types.length){
+        return false;
+    }
+    decks[+current_player].splice(exclusiveRandRange(0, decks[+current_player].length), 0, idx)
+    return true;
+}
+
 
 function TransformMinion(target, idx){
     splitTarget = target.split(".")
