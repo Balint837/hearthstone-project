@@ -30,11 +30,11 @@ If these cannot describe an ability then plain text is used to describe them. \
 
 Mage
 ------------
-- 1:1. 0,0,1, spell ur hp deals +1 dmg (ha nem leeht megoldani: onplay deal 3 dmg)
+- 1:1. 0,0,1, spell ur hp deals +1 dmg (ha nem leeht megoldani: onplay deal 3 dmg) (For the rest of the game your Hero Power deals +1 damage.)
 - 2:2. 0,0,1, spell deal 2 dmg twice to a minion (if divine shield, only once)
 - 3:3. 2,2,1
 - 4:4. 0,0,2, spell deal 2 dmg and return this to your deck (ha nem lehet megoldani: onplay deal 3 dmg twice)
-- 5:5. 2,2,2, on play ur next spell does +2 dmg
+- 5:5. 2,2,2, on play deal 2 damage
 - 6:6. 2,3,2, on play draw a spell
 - 7:7. 0,0,2, spell heal your hero 5 heathpoints
 - 8:8. 0,0,7, spell, deal 5 dmg to all enemy minions
