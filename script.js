@@ -188,6 +188,7 @@ function UseHeroPower(target){
         selected = [null, null];
         return updateAll();
     }
+    current_mana[+player] -= 2;
     current_hero = heroes[selected_heroes[+player]]
     if (!current_hero.may_attack) {
         selected = [null, null]
