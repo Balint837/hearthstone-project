@@ -59,13 +59,13 @@ Hunter
 - 18:2. 0,0,1, set a minion's def to 1, , , , , false, false, true
 - 19:3. 1,1,1, summon a copy of this to the board, , , , , false, true, false
 - 20:4. 0,0,3, destroy a random enemy minion, , , , , false, false, true
-- 21:5*. 2,4,7, if ur hand does not have duplicates summon an 8/8 instant_attack (23:7), , , , , false, false, false
+- 21:5*. 2,4,7, summon an 8/8 instant_attack (23:7), , , , , false, false, false
 - 22:6*. 3,4,3 , , , , , , false, false, false (spells are instakill)
 - 23:7*. 8,8,8, , , , , , false, true, false
 - 24:8*. 5,5,8, summon 3 minions from ur hand (takes them out from hand, on_play doesnt activate), , , , , false, false, false
 - 25:9. 0,0,10, summon 4 3/5 (104:+1) minions, , , , , false, false, true
-- 26:10. 0,0,7, summon two minions from your deck that cost 5 or less, , , , , false,false, true
-- 27:11. 0,0,4, deal 6 dmg excess dmg hits enemy hero, , , , , false, false, true
+- 26:10. 0,0,7, summon two minions from your deck, , , , , false,false, true
+- 27:11. 0,0,4, deal 6 dmg, , , , , false, false, true
 - 28:12. 3,3,4, , , summon two 1/1 (102:+1.) minions, , , false, false, false
 - 29:13. 0,0,4, deal 3 dmg to two random enemy minions, , , , , false, false, true
 - 30:14. 0,0,3, deal 3 dmg your next hp has +2 dmg (buff), , , , , false, false, true 
@@ -84,22 +84,22 @@ Paladin
 ------------
 - 34:1. 1,1,1, , , , , , true, false, false (DIVINE SHIELD) 
 - 35:2. 1,1,1, Draw 1, , , false, false, false
-- 36:3. 0,0,1, heal 2, put this back to your hand until turnend, , , , , false, false, true
+- 36:3. 0,0,1, heal 2, put this back to your hand, , , , , false, false, true
 - 37:4. 3,2,2, give divine shield to minion, , , , , false, false, false
 - 38:5. 0,0,2, set all minions health to 1, , , , , false, false, true
-- 39:6. 2,3,2, , , , , ha ezen spellt játszol még1szer lejátsza egy friendly minion-on, false, false, false
+- 39:6. 2,3,2, , , , , summon a 2/2 (107:+2), false, false, false
 - 40:7.* 3,3,3, , , give a fm +3/+3 and give the fm the same on_death effect, , , false, false, false
 - 41:8. 0,0,4, give a minion +4/+4, , , , , false, false, true
 - 42:9. 0,0,4, summon 5 1/1 minions (102:+1), , , , , false, false, true
 - 43:10. 5,5,5, summon another 5/5 (43:10) if you dont have any other minions, , , , , true, false, false
 - 44:11. 8,8,8, , , , summon 5/5 taunt (43:10), , false, false, false
-- 45:12. 5,5,9, give u 1 mana for all spells you have cast this game, , , , , true, false, false
+- 45:12. 5,5,5, , , , , , true, false, false
 - 46:13. 0,0,3, summon two (102:+1) and then give all fm's +1/+1, , , , , false, false, true
 - 47:14. 3,3,3, , , , heal the dmg of this minion to your hero (on_attack), , false, false, false
 - 48:15. 2,5,3, if u have a spell in ur hand gain taunt, , , , , false(true if fulfilled), false, false
-- 49:16*. 4,4,5, transform your minions into 3/3 (106:+1) and give them on_death: summon a 1/1 (102:+1), , , , , false, false, false
+- 49:16*. 4,4,5, transform your minions into 3/3 (106:+1), , , , , false, false, false
 
-- 106:+1. 3,3,3, , , summon a 1/1 (102:+1), , true, false, false
+- 106:+1. 3,3,3, , , , , true, false, false
 - 111+2. 1,1,1, , , , , , false, true, false
 
 total:30
@@ -163,18 +163,18 @@ total:30
 Priest
 ------------
 - 83:1. 0,0,0, heal 4 to all minions, , , , , false, false, true
-- 84:2. 0,0,1, set the attack of all enemy minions to 1 until your next turn, , , , , false, false, true
+- 84:2. 0,0,6, set the attack of all enemy minions to 1, , , , , false, false, true
 - 85:3. 0,0,1, dmg 3 to a minion, , , , , false, false, true
 - 86:4. 0,0,1, COPY a card from opponent hand(add it to yours), , , , , false, false, true
 - 87:5. 0,0,2, copy 2 cards from your opponents deck add it to your hand, , , , , false, false, true
 - 88:6. 0,0,5, summon a copy of a friendly minion with 5/5 stats, , , , , false, false, true
 - 89:7. 0,0,5, give a minion +1/+2 then copy the minion, , , , , false, false, true
 - 90:8* 4,6,7, shuffle a copy of your opponents deck into your deck
-- 91:9* 0,0,9, summon a 1/1 copy of minions from your deck to the board until its full, , , , , false, false, true
+- 91:9* 0,0,9, summon 3 minions from your deck onto your board, , , , , false, false, true
 - 92:10. 2,6,5, , , Destroy a random enemy minion, , , true, false, false
 - 93:11. 5,4,4, , , , , deal 4 dmg to both heroes, false, false, false
-- 94:12. 0,0,4, put a copy of an enemy minion on your board from the enemy's deck, , , , , false, false, true
-- 95:13. 5,5,5, , restore 5 health to a damaged friendly minion, , , , false, false, false
+- 94:12. 0,0,4, copy 2 cards from your opponents hand add it to your hand, , , , , false, false, true
+- 95:13. 5,5,5, restore 5 heath to your hero , , , , , false, false, false
 - 96:14. 2,3,2, +0/+2 to a friendly minion, , , , , false, false, false
 - 97:15. 4,3,4, , , deal 3 dmg to enemy hero, , , false, false, false
 - 98:16. 6,6,6, , , restore 8 health to all friendly characters (including hero), , , true, false, false
